@@ -9,7 +9,7 @@ function Footer() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full bg-slate-800 text-white p-10 h-auto">
         <div>
           <h5>ABOUT US</h5>
-          <p className="text-sm mt-3">
+          <p className="text-sm mt-3 text-justify">
             Lorem ipsum, dolor sit amet consectetur adipisicing elit. Eos velit sequi
             odio eveniet illo iste a possimus nesciunt necessitatibus voluptatum
             debitis, cupiditate in! Quae exercitationem obcaecati dignissimos?
@@ -20,11 +20,11 @@ function Footer() {
         <div className="md:ms-30">
           <h5>NEWSLETTER</h5>
           <p className="text-sm mt-3">Stay updated with our latest trends</p>
-          <div className="flex items-center">
-            <input type="text" className="bg-white mt-3" />
-            <div className="bg-yellow-300 text-black mt-3 px-1">
+          <div className="flex">
+            <input type="text" className="bg-white mt-3 placeholder-gray-500 px-2" placeholder='Email ID' />
+            <button className="bg-yellow-300 text-black mt-3 px-1">
               <FontAwesomeIcon icon={faArrowRight} />
-            </div>
+            </button>
           </div>
         </div>
 
