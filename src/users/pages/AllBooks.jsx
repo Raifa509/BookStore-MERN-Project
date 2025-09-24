@@ -25,25 +25,35 @@ function AllBooks() {
 
          <div className='mt-3'>
           <input type="radio" id='Literary' name='filter'/>
-          <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
+          <label className='ms-2' htmlFor="philosophy">Philosophy</label>
         </div>
         <div className='mt-3'>
           <input type="radio" id='Literary' name='filter'/>
-          <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
+          <label className='ms-2' htmlFor="romance">Romance</label>
         </div>
         
          <div className='mt-3'>
           <input type="radio" id='Literary' name='filter'/>
-          <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
+          <label className='ms-2' htmlFor="mystery">Mystery/Thriller</label>
         </div>
         <div className='mt-3'>
           <input type="radio" id='Literary' name='filter'/>
-          <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
+          <label className='ms-2' htmlFor="horror">Horror</label>
         </div>
         
          <div className='mt-3'>
           <input type="radio" id='Literary' name='filter'/>
-          <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
+          <label className='ms-2' htmlFor="auto">Auto/Biography</label>
+        </div>
+
+         <div className='mt-3'>
+          <input type="radio" id='Literary' name='filter'/>
+          <label className='ms-2' htmlFor="selfhelp">Self-Help</label>
+        </div>
+
+         <div className='mt-3'>
+          <input type="radio" id='Literary' name='filter'/>
+          <label className='ms-2' htmlFor="politics">Politics</label>
         </div>
       </div>
 
