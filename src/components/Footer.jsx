@@ -6,7 +6,7 @@ import { faFacebook, faInstagram, faLinkedin, faTwitter } from '@fortawesome/fre
 function Footer() {
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full bg-slate-800 text-white p-10 h-auto">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full bg-slate-800 text-white p-10 h-auto mt-10">
         <div>
           <h5>ABOUT US</h5>
           <p className="text-sm mt-3 text-justify">

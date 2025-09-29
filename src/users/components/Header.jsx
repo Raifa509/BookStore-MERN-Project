@@ -44,7 +44,7 @@ function Header() {
       </div>
 
       {/* menu and login */}
-      <nav className='bg-slate-800 text-white p-2 w-full mb-4'>
+      <nav className='bg-slate-800 text-white p-2 w-full'>
         <div className='flex justify-between items-center md:hidden'>
           <button onClick={()=>setListStatus(!listStatus)}><FontAwesomeIcon icon={faBars} size="lg" className="me-2" />
           </button>

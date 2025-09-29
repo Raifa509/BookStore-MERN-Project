@@ -64,11 +64,11 @@ function ViewBook() {
         modalStatus &&
         <div className='relative z-10' onClick={() => setModalStatus(false)}>
           {/* this div for overlay */}
-          <div className='bg-gray-500/55 fixed inset-0'>
+          <div className='bg-gray-500/75 fixed inset-0'>
 
             {/* content div goes here */}
             <div className="flex justify-center items-center min-h-screen ">
-              <div className='bg-white rounded' style={{ width: '900px' }}>
+              <div className='bg-white rounded md:w-250 w-100 ' >
                 <div className='flex justify-between items-center bg-black text-white p-3'>
                   <h3>Books Images</h3>
                   <FontAwesomeIcon onClick={() => setModalStatus(false)} icon={faClose} />
