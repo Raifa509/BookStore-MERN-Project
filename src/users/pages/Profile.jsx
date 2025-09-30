@@ -31,6 +31,7 @@ function Profile() {
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus, minus assumenda porro non possimus laudantium architecto vitae ab odit veniam recusandae dolores. Commodi vitae doloremque quas error inventore. Ut, aspernatur.
       </div>
 
+      {/* tabs */}
       <div className="md:px-40">
         <div className="flex justify-center items-center my-5">
           <p onClick={() => { setSellBookStatus(true); setPurchaseStatus(false); setBookStatus(false) }} className={sellBookStatus ? 'text-blue-500 px-4 py-3 border-gray-200  cursor-pointer border-t border-l border-r ' : 'border-b border-gray-200 cursor-pointer px-4 py-3'}>Sell Books</p>
@@ -168,7 +169,7 @@ function Profile() {
               <div className="px-4 mt-4 md:mt-0">
                 <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
 
-               
+
               </div>
             </div>
           </div>
