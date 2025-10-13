@@ -8,7 +8,12 @@ import SERVERURL from "./serverURL";
         return await commonAPI("POST",`${SERVERURL}/register`,reqBody)
     }
 
-    //login api
+    //login api-called by Auth component when login btn clicked,
+    export const loginAPI=async(reqBody)=>{
+        return await commonAPI("POST",`${SERVERURL}/login`,reqBody)
+    }
+
+
     //home page books api
     //all career api
     

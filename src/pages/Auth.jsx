@@ -1,11 +1,13 @@
 import { faEye, faEyeSlash, faUser } from '@fortawesome/free-regular-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
+import { loginAPI, registerAPI } from '../Services/allAPI'
 
 
 function Auth({ register }) {
+  const navigate = useNavigate()
   const [userDetails, setUserDetails] = useState({
     username: "",
     email: "",
@@ -14,17 +16,70 @@ function Auth({ register }) {
   const [viewPasswordStatus, setViewPasswordStatus] = useState(false)
   // console.log(userDetails);
 
+  //login button handle
+  const handleLogin=async ()=>{
+     const { email, password } = userDetails
+    if (!email || !password) {
+      toast.info('Please fill the form completely')
+    }
+    else {
+      // toast.success("Proceed to API call")
+      try {
+        const result = await loginAPI(userDetails)
+        console.log(result);
+        if (result.status == 200) {
+    
+
+        }
+        else if (result.status == 404) {
+
+    
+        } else {
+          console.log(result);
+
+        }
+
+      } catch (err) {
+        console.log(err);
+
+      }
+
+    }
+  }
 
   // register button handle
-  const handleRegister = () => {
+  const handleRegister = async () => {
 
     console.log("Inside handleRegister");
     const { username, email, password } = userDetails
-    if (username && email && password) {
-      toast.success("Proceed to API call")
+    if (!username || !email || !password) {
+      toast.info('Please fill the form completely')
     }
     else {
-      toast.info('Please fill the form completely')
+      // toast.success("Proceed to API call")
+      try {
+        const result = await registerAPI(userDetails)
+        console.log(result);
+        if (result.status == 200) {
+          toast.success("Register Success!!!Please Login...")
+          setUserDetails({ username: "", email: "", password: "" })
+          navigate('/login')
+
+        }
+        else if (result.status == 409) {
+          toast.warning(result.response.data)
+          setUserDetails({ username: "", email: "", password: "" })
+          navigate('/login')
+        } else {
+          console.log(result);
+
+        }
+
+      } catch (err) {
+        console.log(err);
+
+      }
+
     }
 
   }
@@ -67,10 +122,10 @@ function Auth({ register }) {
               {
                 register ?
 
-                  <button type='button' onClick={handleRegister} className='w-full bg-green-700 font-bold rounded py-2 mt-6'>Register</button>
+                  <button type='button' onClick={handleRegister} className='w-full bg-green-700 font-bold rounded py-2 mt-6 cursor-pointer'>Register</button>
 
                   :
-                  <button type='button' className='w-full bg-green-700 font-bold rounded py-2 mt-6'>Login</button>
+                  <button type='button' onClick={handleLogin}  className='w-full bg-green-700 font-bold rounded py-2 mt-6 cursor-pointer'>Login</button>
 
               }
 
@@ -89,21 +144,21 @@ function Auth({ register }) {
           </div>
         </div>
 
-       
+
       </div>
-       {/* toast for alert */}
-        <ToastContainer
-          position="top-right"
-          autoClose={3000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick={false}
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="colored"
-        />
+      {/* toast for alert */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   )
 }
