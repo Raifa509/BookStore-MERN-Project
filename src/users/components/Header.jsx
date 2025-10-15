@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInstagram, faTwitter, faFacebook } from '@fortawesome/free-brands-svg-icons';
 import { faBars, faUser } from '@fortawesome/free-solid-svg-icons';
@@ -9,8 +9,19 @@ function Header() {
 
   // for menu 
   const [listStatus, setListStatus] = useState(false)
+  const [token,setToken]=useState("")
+  const [userDp,setUserDp]=useState("")
 
 
+  useEffect(()=>{
+    if(sessionStorage.getItem("token")){
+      const token=sessionStorage.getItem("token")
+      setToken(token)
+      const user=JSON.parse(sessionStorage.getItem("user"))
+      setUserDp(user.profile)
+    }
+
+  },[])
 
   return (
     <>
@@ -29,15 +40,29 @@ function Header() {
 
         {/* login */}
         <div>
-          <div className='md:flex justify-end items-center me-6 hidden'>
+          <div className='md:flex justify-end items-center me-3 hidden'>
             <FontAwesomeIcon icon={faInstagram} size="lg" className="me-2" />
             <FontAwesomeIcon icon={faTwitter} size="lg" className="me-2" />
             <FontAwesomeIcon icon={faFacebook} size="lg" className="me-2" />
 
             {/* login link */}
 
-            <Link to={'/login'}><button className='border border-black rounded px-2 py-1 ms-3 hover:bg-black hover:text-white'><FontAwesomeIcon icon={faUser} size="sm" className="me-2" />
+           {
+            !token ?
+             <Link to={'/login'}><button className='border border-black rounded px-2 py-1 ms-3 hover:bg-black hover:text-white'><FontAwesomeIcon icon={faUser} size="sm" className="me-2" />
               Login</button></Link>
+
+            :
+           <div className='ms-2'>
+            <button>
+              <img width={'40px'} height={'40px'} src={userDp==""?"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s":""} alt="user" />
+            </button>
+           </div>
+           }
+
+           
+
+
 
           </div>
         </div>

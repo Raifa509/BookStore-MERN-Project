@@ -26,6 +26,7 @@ function Profile() {
         <div>Edit</div>
       </div>
 
+
       <div className="md:px-20 px-5 my-8 text-justify">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Dignissimos veritatis ex nam officiis voluptate facilis animi reiciendis vero in ipsa obcaecati maxime corrupti delectus voluptatem vitae amet, molestias ipsam quas.
         Lorem ipsum dolor sit amet, consectetur adipisicing elit. Delectus, minus assumenda porro non possimus laudantium architecto vitae ab odit veniam recusandae dolores. Commodi vitae doloremque quas error inventore. Ut, aspernatur.

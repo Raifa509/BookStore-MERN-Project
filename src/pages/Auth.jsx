@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import { loginAPI, registerAPI } from '../Services/allAPI'
-
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
 
 function Auth({ register }) {
   const navigate = useNavigate()
@@ -17,8 +17,8 @@ function Auth({ register }) {
   // console.log(userDetails);
 
   //login button handle
-  const handleLogin=async ()=>{
-     const { email, password } = userDetails
+  const handleLogin = async () => {
+    const { email, password } = userDetails
     if (!email || !password) {
       toast.info('Please fill the form completely')
     }
@@ -28,15 +28,30 @@ function Auth({ register }) {
         const result = await loginAPI(userDetails)
         console.log(result);
         if (result.status == 200) {
-    
-
+          toast.success("Login Success!!!")
+          sessionStorage.setItem("user", JSON.stringify(result.data.user))
+          sessionStorage.setItem("token", result.data.user)
+          setTimeout(() => {
+            if (result.data.user.role == "admin") {
+              navigate("/admin-dashboard")
+            } else {
+              navigate("/")
+            }
+          }, 2500)
+        }
+        else if (result.status == 401) {
+          toast.warning(result.response.data)
+          setUserDetails({ username: "", email: "", password: "" })
         }
         else if (result.status == 404) {
+          toast.warning(result.response.data)
+          setUserDetails({ username: "", email: "", password: "" })
 
-    
+
         } else {
-          console.log(result);
-
+          // console.log(result);
+          toast.error("Something went wrong!!!")
+          setUserDetails({ username: "", email: "", password: "" })
         }
 
       } catch (err) {
@@ -71,8 +86,9 @@ function Auth({ register }) {
           setUserDetails({ username: "", email: "", password: "" })
           navigate('/login')
         } else {
-          console.log(result);
-
+          // console.log(result);
+          toast.error("Something went wrong!!!")
+          setUserDetails({ username: "", email: "", password: "" })
         }
 
       } catch (err) {
@@ -125,13 +141,32 @@ function Auth({ register }) {
                   <button type='button' onClick={handleRegister} className='w-full bg-green-700 font-bold rounded py-2 mt-6 cursor-pointer'>Register</button>
 
                   :
-                  <button type='button' onClick={handleLogin}  className='w-full bg-green-700 font-bold rounded py-2 mt-6 cursor-pointer'>Login</button>
+                  <button type='button' onClick={handleLogin} className='w-full bg-green-700 font-bold rounded py-2 mt-6 cursor-pointer'>Login</button>
 
               }
 
               {/* google authentication */}
+            {
+              !register &&
+                <div className='flex flex-col mt-5'>
+                <p>--------------------- or ---------------------</p>
+                <div className='mt-5'>
+                 <GoogleOAuthProvider>
+                    <GoogleLogin
+                      onSuccess={credentialResponse => {
+                        console.log(credentialResponse);
+                      }}
+                      onError={() => {
+                        console.log('Login Failed');
+                      }}
+                    />
+                 </GoogleOAuthProvider>
+                </div>
 
-              <div className='text-center mt-15 text-sm mb-6'>
+              </div>
+            }
+
+              <div className='text-center mt-10 text-sm mb-6'>
 
                 {
                   register ?
