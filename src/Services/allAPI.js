@@ -13,6 +13,11 @@ import SERVERURL from "./serverURL";
         return await commonAPI("POST",`${SERVERURL}/login`,reqBody)
     }
 
+    //google-login
+   export const googleLoginAPI=async(reqBody)=>{
+        return await commonAPI("POST",`${SERVERURL}/google-login`,reqBody)
+    }
+
 
     //home page books api
     //all career api

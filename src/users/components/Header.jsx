@@ -1,27 +1,37 @@
 import React, { useEffect, useState } from 'react'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInstagram, faTwitter, faFacebook } from '@fortawesome/free-brands-svg-icons';
-import { faBars, faUser } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { faAddressCard, faBars, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons';
+import { Link, useNavigate } from 'react-router-dom';
 
 
 function Header() {
 
   // for menu 
   const [listStatus, setListStatus] = useState(false)
-  const [token,setToken]=useState("")
-  const [userDp,setUserDp]=useState("")
+  const [token, setToken] = useState("")
+  const [userDp, setUserDp] = useState("")
+  const [dropDownStatus, setDropDownStatus] = useState(false)
+  const navigate=useNavigate()
 
-
-  useEffect(()=>{
-    if(sessionStorage.getItem("token")){
-      const token=sessionStorage.getItem("token")
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      const token = sessionStorage.getItem("token")
       setToken(token)
-      const user=JSON.parse(sessionStorage.getItem("user"))
+      const user = JSON.parse(sessionStorage.getItem("user"))
       setUserDp(user.profile)
     }
 
-  },[])
+  }, [])
+
+  //logout handle
+const handlelogout = () => {
+  sessionStorage.clear();
+  setToken("");
+  setUserDp("");
+  navigate("/");
+}
+
 
   return (
     <>
@@ -47,20 +57,31 @@ function Header() {
 
             {/* login link */}
 
-           {
-            !token ?
-             <Link to={'/login'}><button className='border border-black rounded px-2 py-1 ms-3 hover:bg-black hover:text-white'><FontAwesomeIcon icon={faUser} size="sm" className="me-2" />
-              Login</button></Link>
+            {
+              !token ?
+                <Link to={'/login'}><button className='border border-black rounded px-2 py-1 ms-3 hover:bg-black hover:text-white'><FontAwesomeIcon icon={faUser} size="sm" className="me-2" />
+                  Login</button></Link>
 
-            :
-           <div className='ms-2'>
-            <button>
-              <img width={'40px'} height={'40px'} src={userDp==""?"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s":""} alt="user" />
-            </button>
-           </div>
-           }
+                :
+                <div className='relative inline-block text-left'>
+                  <button onClick={() => setDropDownStatus(!dropDownStatus)} className=' bg-white px-3 py-2 shadow-xs hover:bg-gray-50 w-full cursor-pointer'>
+                    <img width={'40px'} height={'40px'} style={{ borderRadius: "50%" }}  src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : ""} alt="user" />
+                  </button>
 
-           
+              {
+                dropDownStatus &&
+                    <div className='absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg'>
+                  <div className="py-1">
+                   <Link to={'/profile'} className='block px-4 py-2 text-sm text-gray-700'><FontAwesomeIcon icon={faAddressCard} className='me-2'/>Profile</Link>
+                   <button onClick={handlelogout} className='block px-4 py-2 text-sm text-gray-700 cursor-pointer'><FontAwesomeIcon icon={faPowerOff} className='me-2'/>Logout</button>
+                  </div>
+                </div>
+              }
+
+                </div>
+            }
+
+
 
 
 
@@ -71,7 +92,7 @@ function Header() {
       {/* menu and login */}
       <nav className='bg-slate-800 text-white p-2 w-full'>
         <div className='flex justify-between items-center md:hidden'>
-          <button onClick={()=>setListStatus(!listStatus)}><FontAwesomeIcon icon={faBars} size="lg" className="me-2" />
+          <button onClick={() => setListStatus(!listStatus)}><FontAwesomeIcon icon={faBars} size="lg" className="me-2" />
           </button>
 
           {/* login link */}
@@ -85,8 +106,8 @@ function Header() {
           <li className='md:mx-4 mt-3 md:mt-0 mx-2'><Link to={'/'} className='text-sm'>Home</Link></li>
           <li className='md:mx-4 mt-3 md:mt-0 mx-2'><Link to={'/all-books'} className='text-sm '>Books</Link></li>
           <li className='md:mx-4 mt-3 md:mt-0 mx-2'><Link to={'/careers'} className='text-sm '>Careers</Link></li>
-          <li className='md:mx-4 mt-3 md:mt-0 mx-2'><Link to={'/contact'} className='text-sm '>Contact</Link></li>        
-          </ul>
+          <li className='md:mx-4 mt-3 md:mt-0 mx-2'><Link to={'/contact'} className='text-sm '>Contact</Link></li>
+        </ul>
       </nav>
     </>
   )

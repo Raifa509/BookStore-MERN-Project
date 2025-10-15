@@ -3,8 +3,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
-import { loginAPI, registerAPI } from '../Services/allAPI'
+import { googleLoginAPI, loginAPI, registerAPI } from '../Services/allAPI'
 import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 function Auth({ register }) {
   const navigate = useNavigate()
@@ -100,6 +101,36 @@ function Auth({ register }) {
 
   }
 
+  //handle google login
+  const handleGoogleLogin = async (credentialResponse) => {
+    console.log("Inside handleGoogleLogin");
+    const credential = credentialResponse.credential
+    const details = jwtDecode(credential)
+    console.log(details);
+    try {
+      const result = await googleLoginAPI({ username: details.name, email: details.email, password: "googlepswd", profile: details.picture })
+      // console.log(result);
+     if (result.status == 200) {
+          toast.success("Login Success!!!")
+          sessionStorage.setItem("user", JSON.stringify(result.data.user))
+          sessionStorage.setItem("token", result.data.user)
+          setTimeout(() => {
+            if (result.data.user.role == "admin") {
+              navigate("/admin-dashboard")
+            } else {
+              navigate("/")
+            }
+          }, 2500)
+        }
+        else {
+          // console.log(result);
+          toast.error("Something went wrong!!!")
+        }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
   return (
     <>
       <div className='flex flex-col justify-center items-center bg-[url("/login-bg.jpg")] bg-cover bg-center min-h-screen'>
@@ -146,25 +177,26 @@ function Auth({ register }) {
               }
 
               {/* google authentication */}
-            {
-              !register &&
-                <div className='flex flex-col mt-5'>
-                <p>--------------------- or ---------------------</p>
-                <div className='mt-5'>
-                 <GoogleOAuthProvider>
+              {
+                !register &&
+                <div className='flex flex-col mt-5 w-full'>
+                  <p>--------------------- or ---------------------</p>
+                  <div className='mt-5 flex items-center justify-center '>
+
                     <GoogleLogin
                       onSuccess={credentialResponse => {
                         console.log(credentialResponse);
+                        handleGoogleLogin(credentialResponse)
                       }}
                       onError={() => {
                         console.log('Login Failed');
                       }}
                     />
-                 </GoogleOAuthProvider>
-                </div>
 
-              </div>
-            }
+                  </div>
+
+                </div>
+              }
 
               <div className='text-center mt-10 text-sm mb-6'>
 
