@@ -27,6 +27,9 @@ import SERVERURL from "./serverURL";
     //view all books
     //view single book
     //upload book
+     export const addBookAPI=async(reqBody,reqHeader)=>{
+        return await commonAPI("POST",`${SERVERURL}/add-book`,reqBody,reqHeader)
+    }
     //profile update
     //view purchase book
     //view approve books

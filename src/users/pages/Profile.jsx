@@ -2,14 +2,35 @@ import React, { useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCircleCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCircleCheck, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 
 function Profile() {
 
   const [sellBookStatus, setSellBookStatus] = useState(true)
   const [bookStatus, setBookStatus] = useState(false)
   const [purchaseStatus, setPurchaseStatus] = useState(false)
+  const [bookDetails, setBookDetails] = useState({
+    title: "", author: "", noOfPages: "", imageUrl: "", price: "", discountPrice: "", abstract: "", publisher: "", language: "", isbn: "", category: "", uploadImges: [],
+  })
+  const [preview, setPreview] = useState("")
+  const [previewList,setPreviewList]=useState([])
+  // console.log(bookDetails);
 
+  const handleUploadBookImage = (e) => {
+    console.log(e.target.files[0]);
+    const url = URL.createObjectURL(e.target.files[0])
+
+    const fileArray=bookDetails.uploadImges
+    fileArray.push(e.target.files[0])
+    setBookDetails({...bookDetails,uploadImges:fileArray})
+    setPreview(url)
+    // console.log(url);
+
+    const bookImgArray=previewList
+    bookImgArray.push(url)
+    setPreviewList(bookImgArray)
+
+  }
   return (
     <>
       <Header />
@@ -58,48 +79,65 @@ function Profile() {
 
               <div className='px-3'>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Title' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.title} onChange={(e) => setBookDetails({ ...bookDetails, title: e.target.value })} placeholder='Title' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Author' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.author} onChange={(e) => setBookDetails({ ...bookDetails, author: e.target.value })} placeholder='Author' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='No.of Pages' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.noOfPages} onChange={(e) => setBookDetails({ ...bookDetails, noOfPages: e.target.value })} placeholder='No.of Pages' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Image URL' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.imageUrl} onChange={(e) => setBookDetails({ ...bookDetails, imageUrl: e.target.value })} placeholder='Image URL' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Price' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.price} onChange={(e) => setBookDetails({ ...bookDetails, price: e.target.value })} placeholder='Price' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Discount Price' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.discountPrice} onChange={(e) => setBookDetails({ ...bookDetails, discountPrice: e.target.value })} placeholder='Discount Price' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <textarea type="text" placeholder='Abstract' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' rows={10} />
+                  <textarea type="text" value={bookDetails?.abstract} onChange={(e) => setBookDetails({ ...bookDetails, abstract: e.target.value })} placeholder='Abstract' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' rows={10} />
                 </div>
               </div>
 
               <div className="px-3">
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Publisher' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.publisher} onChange={(e) => setBookDetails({ ...bookDetails, publisher: e.target.value })} placeholder='Publisher' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Language' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.language} onChange={(e) => setBookDetails({ ...bookDetails, language: e.target.value })} placeholder='Language' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='ISBN' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.isbn} onChange={(e) => setBookDetails({ ...bookDetails, isbn: e.target.value })} placeholder='ISBN' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
                 <div className="mb-3 px-3">
-                  <input type="text" placeholder='Category' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
+                  <input type="text" value={bookDetails?.category} onChange={(e) => setBookDetails({ ...bookDetails, category: e.target.value })} placeholder='Category' className='w-full p-2 rounded text-black placeholder-gray-400 bg-white' />
                 </div>
 
                 <div className="mb-3 flex justify-center items-center mt-10">
                   <label htmlFor="bookImage">
-                    <input type="file" name="" id="bookImage" className='hidden' />
-                    <img src="https://cdn.pixabay.com/photo/2016/01/03/00/43/upload-1118929_640.png" alt="book image" width={'200px'} height={'200px'} />
+                    <input onChange={(e) => handleUploadBookImage(e)} type="file" name="" id="bookImage" className='hidden' />
+                    {
+                      !preview ?
+                        <img src="https://cdn.pixabay.com/photo/2016/01/03/00/43/upload-1118929_640.png" alt="book image" width={'200px'} height={'200px'} />
+                        :
+                        <img src={preview} width={'200px'} height={'200px'} />
+                    }
                   </label>
                 </div>
+               {   preview &&  <div className="flex justify-center items-center ">
+                  {
+                    previewList?.map(imgUrl=>(
+                       <img src={imgUrl} alt="book image" width={'70px'} height={'70px'} className='mx-3' />
+                    ))
+                  }
+                  {previewList.length<3 && <label htmlFor="bookImage">
+                    <input onChange={(e) => handleUploadBookImage(e)} type="file" name="" id="bookImage" className='hidden' />
+                    <FontAwesomeIcon icon={faSquarePlus} className='text-4xl text-gray-400' />
+                  </label>}
+                </div>}
+
               </div>
 
 
