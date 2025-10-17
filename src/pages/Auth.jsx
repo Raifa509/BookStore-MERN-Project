@@ -66,7 +66,7 @@ function Auth({ register }) {
   // register button handle
   const handleRegister = async () => {
 
-    console.log("Inside handleRegister");
+    // console.log("Inside handleRegister");
     const { username, email, password } = userDetails
     if (!username || !email || !password) {
       toast.info('Please fill the form completely')

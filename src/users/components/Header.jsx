@@ -22,13 +22,14 @@ function Header() {
       setUserDp(user.profile)
     }
 
-  }, [])
+  }, [token])
 
   //logout handle
 const handlelogout = () => {
   sessionStorage.clear();
   setToken("");
   setUserDp("");
+  setDropDownStatus(false)
   navigate("/");
 }
 
@@ -65,7 +66,7 @@ const handlelogout = () => {
                 :
                 <div className='relative inline-block text-left'>
                   <button onClick={() => setDropDownStatus(!dropDownStatus)} className=' bg-white px-3 py-2 shadow-xs hover:bg-gray-50 w-full cursor-pointer'>
-                    <img width={'40px'} height={'40px'} style={{ borderRadius: "50%" }}  src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : ""} alt="user" />
+                    <img width={'40px'} height={'40px'} style={{ borderRadius: "50%" }}  src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : userDp.startsWith("https://lh3.googleusercontent.com")?userDp:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s"} alt="user" />
                   </button>
 
               {
