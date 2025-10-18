@@ -30,6 +30,11 @@ import SERVERURL from "./serverURL";
      export const addBookAPI=async(reqBody,reqHeader)=>{
         return await commonAPI("POST",`${SERVERURL}/add-book`,reqBody,reqHeader)
     }
+
+    //getHomebook
+      export const getHomeBooksAPI=async()=>{
+        return await commonAPI("GET",`${SERVERURL}/home-books`)
+    }
     //profile update
     //view purchase book
     //view approve books

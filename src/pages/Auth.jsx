@@ -4,7 +4,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { toast, ToastContainer } from 'react-toastify'
 import { googleLoginAPI, loginAPI, registerAPI } from '../Services/allAPI'
-import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google';
+import { GoogleLogin } from '@react-oauth/google';
 import { jwtDecode } from "jwt-decode";
 
 function Auth({ register }) {
@@ -14,6 +14,7 @@ function Auth({ register }) {
     email: "",
     password: ""
   })
+  
   const [viewPasswordStatus, setViewPasswordStatus] = useState(false)
   // console.log(userDetails);
 
@@ -31,7 +32,7 @@ function Auth({ register }) {
         if (result.status == 200) {
           toast.success("Login Success!!!")
           sessionStorage.setItem("user", JSON.stringify(result.data.user))
-          sessionStorage.setItem("token", result.data.user)
+          sessionStorage.setItem("token", result.data.token)
           setTimeout(() => {
             if (result.data.user.role == "admin") {
               navigate("/admin-dashboard")

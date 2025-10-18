@@ -1,8 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
+import { toast, ToastContainer } from 'react-toastify'
+import { addBookAPI } from "../../Services/allAPI";
 
 function Profile() {
 
@@ -13,24 +15,84 @@ function Profile() {
     title: "", author: "", noOfPages: "", imageUrl: "", price: "", discountPrice: "", abstract: "", publisher: "", language: "", isbn: "", category: "", uploadImges: [],
   })
   const [preview, setPreview] = useState("")
-  const [previewList,setPreviewList]=useState([])
+  const [previewList, setPreviewList] = useState([])
+  const [token, setToken] = useState("")
   // console.log(bookDetails);
 
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      setToken(sessionStorage.getItem("token"))
+    }
+  }, [])
   const handleUploadBookImage = (e) => {
-    console.log(e.target.files[0]);
+    // console.log(e.target.files[0]);
     const url = URL.createObjectURL(e.target.files[0])
 
-    const fileArray=bookDetails.uploadImges
+    const fileArray = bookDetails.uploadImges
     fileArray.push(e.target.files[0])
-    setBookDetails({...bookDetails,uploadImges:fileArray})
+    setBookDetails({ ...bookDetails, uploadImges: fileArray })
     setPreview(url)
     // console.log(url);
 
-    const bookImgArray=previewList
+    const bookImgArray = previewList
     bookImgArray.push(url)
     setPreviewList(bookImgArray)
 
   }
+
+  const handleBookSubmit = async () => {
+    const { title, author, noOfPages, imageUrl, price, discountPrice, abstract, publisher, language, isbn, category, uploadImges } = bookDetails
+
+    if (!title || !author || !noOfPages || !imageUrl || !price || !discountPrice || !abstract || !publisher || !language || !isbn || !category || uploadImges.length == 0) {
+      toast.info("Please fill the form completely")
+    } else {
+      //api call
+      const reqHeader = {
+        "Authorization": `Bearer ${token}`
+      }
+      const reqBody = new FormData()
+      //append:reqBody.append(key,value)
+      for (let key in bookDetails) {
+        if (key != "uploadImges") {
+          reqBody.append(key, bookDetails[key])
+        } else {
+          bookDetails.uploadImges.forEach((img) => {
+            reqBody.append("uploadImges", img)
+          })
+        }
+      }
+
+      try {
+        const result = await addBookAPI(reqBody, reqHeader)
+        console.log(result);
+        if (result.status == 401) {
+          toast.warning(result.response.data)
+          // handleReset()
+        } else if (result.status == 200) {
+          toast.success("Book added Successfully!!")
+          handleReset()
+        } else {
+          toast.error('Something went wrong!!!')
+          // handleReset()
+        }
+
+      } catch (err) {
+        console.log(err);
+      }
+
+    }
+  }
+
+  //handle reset
+  const handleReset = () => {
+    setBookDetails({
+      title: "", author: "", noOfPages: "", imageUrl: "", price: "", discountPrice: "", abstract: "", publisher: "", language: "", isbn: "", category: "", uploadImges: [],
+    })
+    setPreview("")
+    setPreviewList([])
+  }
+
   return (
     <>
       <Header />
@@ -72,7 +134,7 @@ function Profile() {
         sellBookStatus &&
         <div>
 
-          <div className="bg-gray-200 p-10 mx-40 my-20">
+          <div className="bg-gray-200 p-10 md:mx-40 my-20">
             <h3 className='text-center text-2xl font-medium'>Book Details</h3>
 
             <div className="md:grid grid-cols-2 mt-10 w-full">
@@ -126,19 +188,27 @@ function Profile() {
                     }
                   </label>
                 </div>
-               {   preview &&  <div className="flex justify-center items-center ">
+                {preview && <div className="flex justify-center items-center ">
                   {
-                    previewList?.map(imgUrl=>(
-                       <img src={imgUrl} alt="book image" width={'70px'} height={'70px'} className='mx-3' />
+                    previewList?.map(imgUrl => (
+                      <img src={imgUrl} alt="book image" width={'70px'} height={'70px'} className='mx-3' />
                     ))
                   }
-                  {previewList.length<3 && <label htmlFor="bookImage">
+                  {previewList.length < 3 && <label htmlFor="bookImage">
                     <input onChange={(e) => handleUploadBookImage(e)} type="file" name="" id="bookImage" className='hidden' />
                     <FontAwesomeIcon icon={faSquarePlus} className='text-4xl text-gray-400' />
                   </label>}
                 </div>}
 
+                <div className='flex items-center justify-center mt-25'>
+
+                  <button className='bg-white px-6 py-1 rounded text-gray-600 border hover:bg-gray-600 hover:text-white  cursor-pointer me-7' onClick={handleReset}>Reset</button>
+                  <button className='bg-white px-6 py-1 rounded text-blue-500 border hover:bg-blue-500 hover:text-white  cursor-pointer ' onClick={handleBookSubmit}>Submit</button>
+
+                </div>
+
               </div>
+
 
 
             </div>
@@ -214,6 +284,20 @@ function Profile() {
           </div>
         </div>
       }
+
+      {/* toast for alert */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
       <Footer />
     </>
   )
