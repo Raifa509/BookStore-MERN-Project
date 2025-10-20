@@ -16,7 +16,7 @@ function Home() {
     getHomeBooks()
   }, [])
 
-  console.log(homeBooks);
+  // console.log(homeBooks);
 
   const getHomeBooks = async () => {
     try {

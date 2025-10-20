@@ -1,133 +1,171 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
+import { getAllBooksAPI } from '../../Services/allAPI';
+import { toast, ToastContainer } from 'react-toastify'
 
 function AllBooks() {
 
   // for filter
   const [listStatus, setListStatus] = useState(false)
+  const [token, setToken] = useState("")
+  const [books, setBooks] = useState([])
 
+  console.log(books);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      const userToken = sessionStorage.getItem("token")
+      setToken(userToken)
+      getAllBooks(userToken)
+    }
+  }, [])
+
+  const getAllBooks = async (userToken) => {
+    const reqHeader = {
+      'Authorization': `Bearer ${userToken}`
+    }
+    try {
+      const result = await getAllBooksAPI(reqHeader)
+      if (result.status == 200) {
+        setBooks(result.data)
+      } else {
+        console.log(result);
+        toast.warning(result.response.data)
+      }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
 
   return (
     <>
       <Header />
       <>
-        <div className='flex flex-col justify-center items-center my-5'>
-          <h1 className='text-3xl font-bold'>Collections</h1>
-          <div className="flex my-5">
-            <input type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
-            <button className="bg-blue-900 text-white p-2">Search</button>
-          </div>
-        </div>
+        {
+          token ?
+            <>
+              <div className='flex flex-col justify-center items-center my-5'>
+                <h1 className='text-3xl font-bold'>Collections</h1>
+                <div className="flex my-5">
+                  <input type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
+                  <button className="bg-blue-900 text-white p-2">Search</button>
+                </div>
+              </div>
 
-        {/* grid */}
-        <div className="md:grid grid-cols-4 p-5 md:px-20 p-5">
-          <div className="col-span-1">
-            <div className='flex justify-between'>
-              <h1 className="text-lg font-semibold">Filter</h1>
-              <button onClick={() => setListStatus(!listStatus)} className='md:hidden'><FontAwesomeIcon icon={faBars} size="lg" className="me-2" />
-              </button>
+              {/* grid */}
+              <div className="md:grid grid-cols-4 md:px-20 p-5">
+                <div className="col-span-1">
+                  <div className='flex justify-between'>
+                    <h1 className="text-lg font-semibold">Filter</h1>
+                    <button onClick={() => setListStatus(!listStatus)} className='md:hidden'><FontAwesomeIcon icon={faBars} size="lg" className="me-2" />
+                    </button>
+                  </div>
+
+                  {/* filter list */}
+                  <div className={listStatus ? 'block' : 'md:block hidden'}>
+                    <div className='mt-3'>
+                      <input type="radio" id='Literary' name='filter' />
+                      <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
+                    </div>
+
+                    <div className='mt-3'>
+                      <input type="radio" id='philosophy' name='filter' />
+                      <label className='ms-2' htmlFor="philosophy">Philosophy</label>
+                    </div>
+                    <div className='mt-3'>
+                      <input type="radio" id='romance' name='filter' />
+                      <label className='ms-2' htmlFor="romance">Romance</label>
+                    </div>
+
+                    <div className='mt-3'>
+                      <input type="radio" id='mystery' name='filter' />
+                      <label className='ms-2' htmlFor="mystery">Mystery/Thriller</label>
+                    </div>
+                    <div className='mt-3'>
+                      <input type="radio" id='horror' name='filter' />
+                      <label className='ms-2' htmlFor="horror">Horror</label>
+                    </div>
+
+                    <div className='mt-3'>
+                      <input type="radio" id='auto' name='filter' />
+                      <label className='ms-2' htmlFor="auto">Auto/Biography</label>
+                    </div>
+
+                    <div className='mt-3'>
+                      <input type="radio" id='selfhelp' name='filter' />
+                      <label className='ms-2' htmlFor="selfhelp">Self-Help</label>
+                    </div>
+
+                    <div className='mt-3'>
+                      <input type="radio" id='politics' name='filter' />
+                      <label className='ms-2' htmlFor="politics">Politics</label>
+                    </div>
+                    <div className='mt-3'>
+                      <input type="radio" id='no-filter' name='filter' />
+                      <label className='ms-2' htmlFor="no-filter">No filter</label>
+                    </div>
+                  </div>
+
+
+                </div>
+
+                <div className="col-span-3">
+                  <div className="md:grid grid-cols-4 gap-5 mt-8 md:mt-0">
+                    {
+                      books?.length > 0 ?
+                      books?.map((item) => (
+                        <div key={item?._id} className="shadow p-3 rounded">
+                          <img src={item.imageUrl
+                          } alt="book" width={'100%'} height={'300px'} />
+                          <div className='flex flex-col justify-center items-center mt-2'>
+                            <p className="text-blue-700 font-bold text-lg">{item.
+                              author.slice(0,20)
+                            }</p>
+                            <p className="text-blue-700">{item.title.slice(0,20)
+                            }</p>
+                            <Link to={`/book/${item?._id}/view`}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
+                          </div>
+                        </div>
+
+                      ))
+                      :
+                      <div className='flex items-center justify-center'>
+                          <p>No Books Available</p>
+                        </div>
+
+                    }
+
+                  </div>
+                </div>
+              </div>
+            </>
+            :
+            <div className='flex flex-col my-4 justify-center items-center min-h-52'>
+              <img src="https://assets-v2.lottiefiles.com/a/790b2fc0-1171-11ee-afd8-87913996c05d/JCzKThXsSJ.gif" alt="lock" className='w-72' />
+              <h1 className='font-semibold text-lg'>Please <Link to={'/login'} className='text-blue-500 underline'>Login</Link> to explore more...</h1>
             </div>
-
-            {/* filter list */}
-            <div className={listStatus?'block':'md:block hidden'}>
-              <div className='mt-3'>
-                <input type="radio" id='Literary' name='filter' />
-                <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
-              </div>
-
-              <div className='mt-3'>
-                <input type="radio" id='philosophy' name='filter' />
-                <label className='ms-2' htmlFor="philosophy">Philosophy</label>
-              </div>
-              <div className='mt-3'>
-                <input type="radio" id='romance' name='filter' />
-                <label className='ms-2' htmlFor="romance">Romance</label>
-              </div>
-
-              <div className='mt-3'>
-                <input type="radio" id='mystery' name='filter' />
-                <label className='ms-2' htmlFor="mystery">Mystery/Thriller</label>
-              </div>
-              <div className='mt-3'>
-                <input type="radio" id='horror' name='filter' />
-                <label className='ms-2' htmlFor="horror">Horror</label>
-              </div>
-
-              <div className='mt-3'>
-                <input type="radio" id='auto' name='filter' />
-                <label className='ms-2' htmlFor="auto">Auto/Biography</label>
-              </div>
-
-              <div className='mt-3'>
-                <input type="radio" id='selfhelp' name='filter' />
-                <label className='ms-2' htmlFor="selfhelp">Self-Help</label>
-              </div>
-
-              <div className='mt-3'>
-                <input type="radio" id='politics' name='filter' />
-                <label className='ms-2' htmlFor="politics">Politics</label>
-              </div>
-              <div className='mt-3'>
-                <input type="radio" id='no-filter' name='filter' />
-                <label className='ms-2' htmlFor="no-filter">No filter</label>
-              </div>
-            </div>
-
-
-          </div>
-
-          <div className="col-span-3">
-            <div className="md:grid grid-cols-4 gap-5 mt-8 md:mt-0">
-
-              <div className="shadow p-3 rounded">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <Link to={'/book/id/view'}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
-                </div>
-              </div>
-
-              <div className="shadow p-3 rounded">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <Link to={'/book/id/view'}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
-
-                </div>
-              </div>
-
-              <div className="shadow p-3 rounded">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <Link to={'/book/id/view'}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
-
-                </div>
-              </div>
-
-
-              <div className="shadow p-3 rounded">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <Link to={'/book/id/view'}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </div>
+        }
 
       </>
       <Footer />
+      {/* toast for alert */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   )
 }

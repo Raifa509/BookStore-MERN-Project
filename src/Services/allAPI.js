@@ -23,8 +23,13 @@ import SERVERURL from "./serverURL";
     //all career api
     
 
-//->authorised user api - user
+//-------------------  authorised user api - user --------------------------------------------
+
     //view all books
+      export const getAllBooksAPI=async(reqHeader)=>{
+        return await commonAPI("GET",`${SERVERURL}/all-books`,{},reqHeader)
+    }
+
     //view single book
     //upload book
      export const addBookAPI=async(reqBody,reqHeader)=>{
