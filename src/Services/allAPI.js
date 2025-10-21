@@ -26,11 +26,15 @@ import SERVERURL from "./serverURL";
 //-------------------  authorised user api - user --------------------------------------------
 
     //view all books
-      export const getAllBooksAPI=async(reqHeader)=>{
+    export const getAllBooksAPI=async(reqHeader)=>{
         return await commonAPI("GET",`${SERVERURL}/all-books`,{},reqHeader)
     }
 
     //view single book
+    export const getSingleBookAPI=async(bookId,reqHeader)=>{
+        return await commonAPI("GET",`${SERVERURL}/book/${bookId}/view`,{},reqHeader)
+    }
+
     //upload book
      export const addBookAPI=async(reqBody,reqHeader)=>{
         return await commonAPI("POST",`${SERVERURL}/add-book`,reqBody,reqHeader)
@@ -40,6 +44,7 @@ import SERVERURL from "./serverURL";
       export const getHomeBooksAPI=async()=>{
         return await commonAPI("GET",`${SERVERURL}/home-books`)
     }
+
     //profile update
     //view purchase book
     //view approve books

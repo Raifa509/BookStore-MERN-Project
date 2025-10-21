@@ -1,56 +1,94 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBackward, faCamera, faClose, faEye } from '@fortawesome/free-solid-svg-icons';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
+import { getSingleBookAPI } from '../../Services/allAPI';
+import { toast, ToastContainer } from 'react-toastify'
+import SERVERURL from '../../Services/serverURL';
 
 function ViewBook() {
 
   const [modalStatus, setModalStatus] = useState(false)
+  const { id } = useParams()
+  const [book, setBook] = useState({})
+  // console.log("Book ID:", id);
+  console.log(book);
 
+  useEffect(() => {
+    viewBookDetails()
+  }, [])
+
+  const viewBookDetails = async () => {
+    const token = sessionStorage.getItem("token")
+    if (token) {
+      const reqHeader = {
+        "Authorization": `Bearer ${token}`
+      }
+      try {
+        const result = await getSingleBookAPI(id, reqHeader)
+        if (result.status == 200) {
+          setBook(result.data)
+        } else if (result.response.status == 401) {
+          toast.warning(result.response.data)
+        } else {
+          console.log(result);
+
+        }
+      } catch (err) {
+        console.log(err);
+
+      }
+    }
+  }
 
   return (
     <>
       <Header />
       <div className='md:m-10 m-5 '>
         <div className="border shadow p-5 border-gray-200">
+
+
           <div className="md:grid grid-cols-4">
             <div className="col-span-1">
-              <div className='flex justify-center items-center'><img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'250px'} height={'250px'} /></div>
+              <div className='flex justify-center items-center'><img src={book?.imageUrl
+              } alt="book" width={'250px'} height={'250px'} /></div>
             </div>
 
             <div className="col-span-3 md:mt-0 mt-10">
               <div className="flex justify-between">
-                <h1 className='text-xl font-bold'>Title</h1>
+                <h1 className='text-xl font-bold'>{book?.title}</h1>
                 <button onClick={() => setModalStatus(true)} className='text-gray-400 cursor-pointer'><FontAwesomeIcon icon={faEye} /></button>
               </div>
 
-              <p className="my-3 text-blue-700">-Author</p>
+              <p className="my-3 text-blue-700">- Author : {book?.author}</p>
 
               <div className="md:grid grid-cols-3 gap-5 my-10">
-                <p className='font-bold'>Publisher : demo </p>
-                <p className='font-bold'>Language : demo </p>
-                <p className='font-bold'>No.of Pages : demo </p>
-                <p className='font-bold'>Seller Mails : demo </p>
-                <p className='font-bold'>Real Price : demo </p>
-                <p className='font-bold'>ISBN : demo </p>
+                <p className='font-bold'>Publisher : {book?.publisher} </p>
+                <p className='font-bold'>Language : {book?.language} </p>
+                <p className='font-bold'>No.of Pages : {book?.noOfPages} </p>
+                <p className='font-bold'>Seller Mails : {book?.userMail} </p>
+                <p className='font-bold'>Real Price : $ {book?.price} </p>
+                <p className='font-bold'>ISBN : {book?.isbn} </p>
               </div>
 
 
               <div className="md:my-10 my-4">
-                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Obcaecati ex iusto magnam nihil, eligendi numquam odit modi quas est saepe atque. Fugiat delectus quod quaerat quis odio beatae ipsum maxime?Lorem ipsum dolor, sit amet consectetur adipisicing elit. Totam facere possimus saepe tempora iure fugiat est ut aperiam, consectetur eius maxime sunt, officia quia laudantium quos, suscipit sint minus! Quaerat.</p>
+                <p>{book?.abstract}</p>
               </div>
 
 
               <div className="flex justify-end">
                 <button className="bg-blue-700 px-4 py-1 text-white rounded"><Link to={'/all-books'}><FontAwesomeIcon icon={faBackward} className='me-1' />Back</Link>
                 </button>
-                <button className="bg-green-600 px-4 py-1 text-white rounded ms-5"><Link to={'/'}>Buy $123</Link></button>
+                <button className="bg-green-600 px-4 py-1 text-white rounded ms-5"><Link to={'/'}>Buy $ {book?.discountPrice}</Link></button>
               </div>
             </div>
 
           </div>
+
+
 
 
         </div>
@@ -83,11 +121,18 @@ function ViewBook() {
 
                   <div className='md:flex my-4'>
                     {/* duplicate images */}
-                    <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
+                    {
+                      book?.uploadImg?.length > 0 ?
+                       book?.uploadImg?.map(item=>(
+                         <img src={`${SERVERURL}/uploads/${item}`} alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
+                       ))
+
+                        :
+                        <p>User uploaded book images are unavailable</p>
+                    }
+
+
                   </div>
-
-
-
                 </div>
 
 
@@ -99,6 +144,19 @@ function ViewBook() {
 
 
       <Footer />
+      {/* toast for alert */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   )
 }

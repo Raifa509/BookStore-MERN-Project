@@ -96,10 +96,29 @@ const handlelogout = () => {
           <button onClick={() => setListStatus(!listStatus)}><FontAwesomeIcon icon={faBars} size="lg" className="me-2" />
           </button>
 
-          {/* login link */}
-          <Link to={'/login'}><button className='border border-white rounded px-2 py-1 me-3 hover:bg-black hover:text-white cursor-pointer'><FontAwesomeIcon icon={faUser} size="sm" className="me-2" />
-            Login</button>
-          </Link>
+          {
+              !token ?
+                <Link to={'/login'}><button className='border border-black rounded px-2 py-1 ms-3 hover:bg-black hover:text-white'><FontAwesomeIcon icon={faUser} size="sm" className="me-2" />
+                  Login</button></Link>
+
+                :
+                <div className='relative inline-block text-left'>
+                  <button onClick={() => setDropDownStatus(!dropDownStatus)} className=' bg-gray-100 rounded-full px-1 py-1 shadow-xs hover:bg-gray-50 w-full cursor-pointer'>
+                    <img width={'40px'} height={'40px'} style={{ borderRadius: "50%" }}  src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : userDp.startsWith("https://lh3.googleusercontent.com")?userDp:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s"} alt="user" />
+                  </button>
+
+              {
+                dropDownStatus &&
+                    <div className='absolute right-0 z-10 mt-2 w-40 origin-top-right rounded-md bg-white shadow-lg'>
+                  <div className="py-1">
+                   <Link to={'/profile'} className='block px-4 py-2 text-sm text-gray-700'><FontAwesomeIcon icon={faAddressCard} className='me-2'/>Profile</Link>
+                   <button onClick={handlelogout} className='block px-4 py-2 text-sm text-gray-700 cursor-pointer'><FontAwesomeIcon icon={faPowerOff} className='me-2'/>Logout</button>
+                  </div>
+                </div>
+              }
+
+                </div>
+            }
 
         </div>
 
