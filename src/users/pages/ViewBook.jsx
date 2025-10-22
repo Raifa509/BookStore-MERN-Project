@@ -71,6 +71,7 @@ function ViewBook() {
                 <p className='font-bold'>Seller Mails : {book?.userMail} </p>
                 <p className='font-bold'>Real Price : $ {book?.price} </p>
                 <p className='font-bold'>ISBN : {book?.isbn} </p>
+                 <p className='font-bold'>Category : {book?.category} </p>
               </div>
 
 

@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { getAllBooksAPI } from '../../Services/allAPI';
 import { toast, ToastContainer } from 'react-toastify'
+import { all } from 'axios';
 
 function AllBooks() {
 
@@ -13,8 +14,12 @@ function AllBooks() {
   const [listStatus, setListStatus] = useState(false)
   const [token, setToken] = useState("")
   const [books, setBooks] = useState([])
+  const [tempBooks, setTempBooks] = useState([])
+  const [allCategories, setAllCategories] = useState([])
+  const [searchKey,setSearchKey]=useState("")
 
-  console.log(books);
+  // console.log(books);
+  // console.log(allCategories);
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
@@ -22,16 +27,25 @@ function AllBooks() {
       setToken(userToken)
       getAllBooks(userToken)
     }
-  }, [])
+  }, [searchKey])
 
   const getAllBooks = async (userToken) => {
     const reqHeader = {
       'Authorization': `Bearer ${userToken}`
     }
     try {
-      const result = await getAllBooksAPI(reqHeader)
+      const result = await getAllBooksAPI(searchKey,reqHeader)
       if (result.status == 200) {
         setBooks(result.data)
+
+        //steps for filtering
+        setTempBooks(result.data)
+        const tempCategory = result.data.map(item => item.category)
+        // console.log(tempCategory);
+        const tempArray = [...new Set(tempCategory)]
+        // console.log(tempArray);
+        setAllCategories(tempArray)
+
       } else {
         console.log(result);
         toast.warning(result.response.data)
@@ -42,6 +56,18 @@ function AllBooks() {
     }
   }
 
+  //filtering according to book category
+  const filterBooks = (category) => {
+    if (category == "No filter") {
+      setBooks(tempBooks)
+    } else {
+      setBooks(tempBooks?.filter(item => item.category.toLowerCase() == category.toLowerCase()))
+
+    }
+
+
+
+  }
   return (
     <>
       <Header />
@@ -52,7 +78,7 @@ function AllBooks() {
               <div className='flex flex-col justify-center items-center my-5'>
                 <h1 className='text-3xl font-bold'>Collections</h1>
                 <div className="flex my-5">
-                  <input type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
+                  <input onChange={e=>setSearchKey(e.target.value)} type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
                   <button className="bg-blue-900 text-white p-2">Search</button>
                 </div>
               </div>
@@ -68,45 +94,20 @@ function AllBooks() {
 
                   {/* filter list */}
                   <div className={listStatus ? 'block' : 'md:block hidden'}>
-                    <div className='mt-3'>
-                      <input type="radio" id='Literary' name='filter' />
-                      <label className='ms-2' htmlFor="Literary">Literary Fiction</label>
-                    </div>
 
-                    <div className='mt-3'>
-                      <input type="radio" id='philosophy' name='filter' />
-                      <label className='ms-2' htmlFor="philosophy">Philosophy</label>
-                    </div>
-                    <div className='mt-3'>
-                      <input type="radio" id='romance' name='filter' />
-                      <label className='ms-2' htmlFor="romance">Romance</label>
-                    </div>
+                    {
+                      allCategories?.length > 0 &&
+                      allCategories?.map((item, index) => (
+                        <div key={index} className='mt-3'>
+                          <input type="radio" id={item} name='filter' onClick={() => filterBooks(item)} />
+                          <label className='ms-2' htmlFor={item}>{item}</label>
+                        </div>
 
-                    <div className='mt-3'>
-                      <input type="radio" id='mystery' name='filter' />
-                      <label className='ms-2' htmlFor="mystery">Mystery/Thriller</label>
-                    </div>
-                    <div className='mt-3'>
-                      <input type="radio" id='horror' name='filter' />
-                      <label className='ms-2' htmlFor="horror">Horror</label>
-                    </div>
 
+                      ))
+                    }
                     <div className='mt-3'>
-                      <input type="radio" id='auto' name='filter' />
-                      <label className='ms-2' htmlFor="auto">Auto/Biography</label>
-                    </div>
-
-                    <div className='mt-3'>
-                      <input type="radio" id='selfhelp' name='filter' />
-                      <label className='ms-2' htmlFor="selfhelp">Self-Help</label>
-                    </div>
-
-                    <div className='mt-3'>
-                      <input type="radio" id='politics' name='filter' />
-                      <label className='ms-2' htmlFor="politics">Politics</label>
-                    </div>
-                    <div className='mt-3'>
-                      <input type="radio" id='no-filter' name='filter' />
+                      <input type="radio" id='no-filter' name='filter' onClick={() => filterBooks("No filter")} />
                       <label className='ms-2' htmlFor="no-filter">No filter</label>
                     </div>
                   </div>
@@ -118,23 +119,23 @@ function AllBooks() {
                   <div className="md:grid grid-cols-4 gap-5 mt-8 md:mt-0">
                     {
                       books?.length > 0 ?
-                      books?.map((item) => (
-                        <div key={item?._id} className="shadow p-3 rounded">
-                          <img src={item.imageUrl
-                          } alt="book" width={'100%'} height={'300px'} />
-                          <div className='flex flex-col justify-center items-center mt-2'>
-                            <p className="text-blue-700 font-bold text-lg">{item.
-                              author.slice(0,20)
-                            }</p>
-                            <p className="text-blue-700">{item.title.slice(0,20)
-                            }</p>
-                            <Link to={`/book/${item?._id}/view`}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
+                        books?.map((item) => (
+                          <div key={item?._id} className="shadow p-3 rounded">
+                            <img src={item.imageUrl
+                            } alt="book" width={'100%'} height={'300px'} />
+                            <div className='flex flex-col justify-center items-center mt-2'>
+                              <p className="text-blue-700 font-bold text-lg">{item.
+                                author.slice(0, 20)
+                              }</p>
+                              <p className="text-blue-700">{item.title.slice(0, 20)
+                              }</p>
+                              <Link to={`/book/${item?._id}/view`}><button className='bg-blue-700 text-white px-4 py-1 rounded my-3 cursor-pointer'>View Book</button></Link>
+                            </div>
                           </div>
-                        </div>
 
-                      ))
-                      :
-                      <div className='flex items-center justify-center'>
+                        ))
+                        :
+                        <div className='flex items-center justify-center'>
                           <p>No Books Available</p>
                         </div>
 

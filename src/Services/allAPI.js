@@ -20,14 +20,18 @@ import SERVERURL from "./serverURL";
 
 
     //home page books api
+      export const getHomeBooksAPI=async()=>{
+        return await commonAPI("GET",`${SERVERURL}/home-books`)
+    }
+
     //all career api
     
 
 //-------------------  authorised user api - user --------------------------------------------
 
     //view all books
-    export const getAllBooksAPI=async(reqHeader)=>{
-        return await commonAPI("GET",`${SERVERURL}/all-books`,{},reqHeader)
+    export const getAllBooksAPI=async(search,reqHeader)=>{
+        return await commonAPI("GET",`${SERVERURL}/all-books?search=${search}`,{},reqHeader)
     }
 
     //view single book
@@ -40,10 +44,6 @@ import SERVERURL from "./serverURL";
         return await commonAPI("POST",`${SERVERURL}/add-book`,reqBody,reqHeader)
     }
 
-    //getHomebook
-      export const getHomeBooksAPI=async()=>{
-        return await commonAPI("GET",`${SERVERURL}/home-books`)
-    }
 
     //profile update
     //view purchase book
