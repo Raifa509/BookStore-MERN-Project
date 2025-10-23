@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { faBars } from '@fortawesome/free-solid-svg-icons';
 import { getAllBooksAPI } from '../../Services/allAPI';
 import { toast, ToastContainer } from 'react-toastify'
 import { all } from 'axios';
+import { searchBookContext } from '../../contextAPI/ContextShare';
 
 function AllBooks() {
 
@@ -16,8 +17,8 @@ function AllBooks() {
   const [books, setBooks] = useState([])
   const [tempBooks, setTempBooks] = useState([])
   const [allCategories, setAllCategories] = useState([])
-  const [searchKey,setSearchKey]=useState("")
-
+  const {searchKey,setSearchKey}=useContext(searchBookContext)
+ 
   // console.log(books);
   // console.log(allCategories);
 
@@ -78,7 +79,7 @@ function AllBooks() {
               <div className='flex flex-col justify-center items-center my-5'>
                 <h1 className='text-3xl font-bold'>Collections</h1>
                 <div className="flex my-5">
-                  <input onChange={e=>setSearchKey(e.target.value)} type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
+                  <input value={searchKey} onChange={e=>setSearchKey(e.target.value)} type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
                   <button className="bg-blue-900 text-white p-2">Search</button>
                 </div>
               </div>

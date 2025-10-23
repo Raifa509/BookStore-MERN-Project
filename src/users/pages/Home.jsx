@@ -1,22 +1,45 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { getHomeBooksAPI } from '../../Services/allAPI';
 import { useEffect } from 'react';
+import { toast, ToastContainer } from 'react-toastify'
+import { searchBookContext } from '../../contextAPI/ContextShare';
 
 function Home() {
 
   const [homeBooks, setHomeBooks] = useState([])
+  const navigate=useNavigate()
+  const {searchKey,setSearchKey}=useContext(searchBookContext)
 
   useEffect(() => {
+    setSearchKey("")
     getHomeBooks()
   }, [])
 
   // console.log(homeBooks);
+
+  //home search handle
+  const searchBookTitle=()=>{
+    if(!searchKey)
+    {
+      toast.warning("Please provide a book title here!!!")
+    }else if(!sessionStorage.getItem("token"))
+    {
+      toast.warning("Please Login to search books")
+      setTimeout(()=>{
+        navigate('/login')
+      },2500)
+    }else if(sessionStorage.getItem("token") && searchKey){
+      navigate("all-books")
+    }else{
+      toast.error("Something went wrong!!")
+    }
+  }
 
   const getHomeBooks = async () => {
     try {
@@ -39,8 +62,8 @@ function Home() {
           <h1 className='text-5xl font-extrabold'>Wonderful Gifts</h1>
           <p>Give your family and friends a book</p>
           <div className='mt-10 relative w-100'>
-            <input type="text" className='w-100 rounded-4xl border px-5 bg-white py-2 placeholder-gray-500 placeholder:text-sm' placeholder='Search Books' />
-            <FontAwesomeIcon icon={faMagnifyingGlass} className='absolute right-3 text-sky-400 top-1/2 transform -translate-y-1/2 me-2 cursor-pointer' />
+            <input onChange={e=>setSearchKey(e.target.value)} type="text" className='w-100 text-black rounded-4xl border px-5 bg-white py-2 placeholder-gray-500 placeholder:text-sm' placeholder='Search Books' />
+            <FontAwesomeIcon onClick={searchBookTitle}  icon={faMagnifyingGlass} className='absolute right-3 text-sky-400 top-1/2 transform -translate-y-1/2 me-2 cursor-pointer' />
           </div>
         </div>
 
@@ -117,6 +140,19 @@ function Home() {
       </section>
 
       <Footer />
+      {/* toast for alert */}
+            <ToastContainer
+              position="top-center"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick={false}
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
+            />
     </>
   )
 }
