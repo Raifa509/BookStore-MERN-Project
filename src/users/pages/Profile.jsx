@@ -4,7 +4,7 @@ import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { toast, ToastContainer } from 'react-toastify'
-import { addBookAPI } from "../../Services/allAPI";
+import { addBookAPI, getAllUserPurchasedBookAPI, getAllUserUploadBookAPI, removeUserUploadBookAPI } from "../../Services/allAPI";
 
 function Profile() {
 
@@ -18,13 +18,53 @@ function Profile() {
   const [previewList, setPreviewList] = useState([])
   const [token, setToken] = useState("")
   // console.log(bookDetails);
+  const [userUploadedBooks, setUserUploadedBooks] = useState([])
+  const [deleteBookStatus, setDeleteBookStatus] = useState(false)
+  const [purchaseBooks, setPurchaseBooks] = useState([])
+  const [username,setUsername]=useState("")
+  const [userDp,setUserDp]=useState("")
 
+
+  // console.log(userUploadedBooks);
+  // console.log(purchaseBooks);
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
       setToken(sessionStorage.getItem("token"))
+      const user=JSON.parse(sessionStorage.getItem("user"))
+      setUsername(user.username)
+      setUserDp(user.Profile)
     }
   }, [])
+
+  useEffect(() => {
+    if (bookStatus) {
+      getAllUserBooks()
+    } else if (purchaseStatus == true) {
+      getAllUserBoughtBooks()
+    }
+  }, [bookStatus, deleteBookStatus, purchaseStatus])
+
+
+  const getAllUserBooks = async () => {
+    const reqHeader = {
+      "Authorization": `Bearer ${token}`
+    }
+    try {
+      const result = await getAllUserUploadBookAPI(reqHeader)
+      if (result.status == 200) {
+        setUserUploadedBooks(result.data)
+      } else {
+        console.log(result);
+
+      }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+
+
   const handleUploadBookImage = (e) => {
     // console.log(e.target.files[0]);
     const url = URL.createObjectURL(e.target.files[0])
@@ -93,6 +133,46 @@ function Profile() {
     setPreviewList([])
   }
 
+  //delete user uploaded book
+  const removeBook = async (bookId) => {
+    const reqHeader = {
+      "Authorization": `Bearer ${token}`
+    }
+    try {
+      const result = await removeUserUploadBookAPI(bookId, reqHeader)
+      if (result.status == 200) {
+        toast.success(result.data)
+        setDeleteBookStatus(true)
+      } else {
+        console.log(result);
+      }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+
+
+  const getAllUserBoughtBooks = async () => {
+    const reqHeader = {
+      "Authorization": `Bearer ${token}`
+    }
+    try {
+      const result = await getAllUserPurchasedBookAPI(reqHeader)
+      if (result.status == 200) {
+        setPurchaseBooks(result.data)
+      } else {
+        console.log(result.data);
+
+      }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+
+
+
   return (
     <>
       <Header />
@@ -103,7 +183,7 @@ function Profile() {
 
       <div className="md:flex justify-between px-20 mt-5">
         <div className="flex items-center">
-          <h1 className="font-bold md:text-3xl text-2xl">Username</h1>
+          <h1 className="font-bold md:text-3xl text-2xl">{username}</h1>
           <FontAwesomeIcon icon={faCircleCheck} className='text-blue-400 ms-2' />
         </div>
         <div>Edit</div>
@@ -222,33 +302,52 @@ function Profile() {
         bookStatus &&
         <div className='p-10 my-20 shadow rounded mx-40'>
           {/* duplicate div according to book */}
-          <div className="p-5 rounded mt-4 bg-gray-100">
-            <div className="md:grid grid-cols-[3fr_1fr]">
-              <div className="px-4">
-                <h2 className='text-xl font-bold'>Title</h2>
-                <h3 className='text-lg'>Author</h3>
-                <h4 className='text-md text-blue-500'>Price</h4>
-                <p className="text-justify text-sm mt-4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga illo optio fugiat soluta reiciendis velit adipisci voluptatum beatae repudiandae, obcaecati eum aspernatur iusto praesentium atque alias placeat sint? Veniam, non?Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident minus, est repellendus optio officia maxime ipsam consequatur culpa ea inventore earum tenetur sed distinctio rem voluptate quasi reprehenderit molestiae dolorum!
-                </p>
+          {
+            userUploadedBooks?.length > 0 ?
+              userUploadedBooks?.map((item, index) => (
+                <div key={index} className="p-5 rounded mt-4 bg-gray-100">
+                  <div className="md:grid grid-cols-[3fr_1fr]">
+                    <div className="px-4">
+                      <h2 className='text-xl font-bold'>{item?.title}</h2>
+                      <h3 className='text-lg'>{item?.author}</h3>
+                      <h4 className='text-md text-blue-500'>$ {item?.discountPrice}</h4>
+                      <p className="text-justify text-sm mt-4">
+                        {item?.abstract}
+                      </p>
 
-                <div className="flex mt-4">
-                  <img src="https://psdstamps.com/wp-content/uploads/2022/04/round-pending-stamp-png.png" alt="" width={'100px'} height={'100px'} />
+                      <div className="flex mt-4">
+                        {
+                          item?.status == "pending" ? <img src="https://psdstamps.com/wp-content/uploads/2022/04/round-pending-stamp-png.png" alt="pending" width={'115px'} /> : item?.status == "approved" ?
+                            <img src="/approved.png" alt="pending" width={'115px'} height={'100px'} /> :
+                            <img src="/rejected.png" alt="pending" width={'115px'} />
+                        }
+
+                      </div>
+
+
+                    </div>
+
+                    <div className="px-4 mt-4 md:mt-0">
+                      <img src={item?.imageUrl} alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
+
+                      <div className="mt-4 flex justify-end">
+                        <button onClick={() => removeBook(item?._id)}
+                          className="bg-white px-4 py-1 text-red-500 rounded ms-5 border border-red-500 hover:bg-red-500 hover:text-white cursor-pointer">Delete</button>
+
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              ))
 
-
+              :
+             <div className='flex items-center justify-center flex-col'>
+                <img src="https://static.wixstatic.com/media/1cf354_fff3948fea4141d4a94d91995105c58e~mv2.gif" alt="" width={'30%'}/>
+                <p className='font-semibold text-md'>Books not uploaded yet!!!</p>
               </div>
+          }
 
-              <div className="px-4 mt-4 md:mt-0">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
 
-                <div className="mt-4 flex justify-end">
-                  <button className="bg-red-600 px-4 py-1 text-white rounded ms-5">Delete</button>
-
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       }
 
@@ -258,36 +357,46 @@ function Profile() {
         purchaseStatus &&
         <div className='p-10 my-20 shadow rounded mx-40'>
           {/* duplicate div according to book */}
-          <div className="p-5 rounded mt-4 bg-gray-100">
-            <div className="md:grid grid-cols-[3fr_1fr]">
-              <div className="px-4">
-                <h2 className='text-xl font-bold'>Title</h2>
-                <h3 className='text-lg'>Author</h3>
-                <h4 className='text-md text-blue-500'>Price</h4>
-                <p className="text-justify text-sm mt-4">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga illo optio fugiat soluta reiciendis velit adipisci voluptatum beatae repudiandae, obcaecati eum aspernatur iusto praesentium atque alias placeat sint? Veniam, non?Lorem ipsum dolor sit amet consectetur adipisicing elit. Provident minus, est repellendus optio officia maxime ipsam consequatur culpa ea inventore earum tenetur sed distinctio rem voluptate quasi reprehenderit molestiae dolorum!
-                </p>
+          {
+            purchaseBooks?.length > 0 ?
+              purchaseBooks?.map((item, index) => (
+                <div className="p-5 rounded mt-4 bg-gray-100">
+                  <div className="md:grid grid-cols-[3fr_1fr]">
+                    <div className="px-4">
+                      <h2 className='text-xl font-bold'>{item?.title}</h2>
+                      <h3 className='text-lg'>{item?.author}</h3>
+                      <h4 className='text-md text-blue-500'>{item?.discountPrice}</h4>
+                      <p className="text-justify text-sm mt-4">
+                     {item?.abstract}
+                      </p>
 
-                <div className="flex mt-4">
-                  <img src="https://www.citypng.com/public/uploads/preview/hd-sold-green-stamp-word-png-7017516946853662lgydj6is3.png" alt="" width={'100px'} height={'100px'} />
+                      <div className="flex mt-4">
+                        <img src="https://www.citypng.com/public/uploads/preview/hd-sold-green-stamp-word-png-7017516946853662lgydj6is3.png" alt="" width={'100px'} height={'100px'} />
+                      </div>
+
+
+                    </div>
+
+                    <div className="px-4 mt-4 md:mt-0">
+                      <img src={item?.imageUrl} alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
+
+                    </div>
+                  </div>
                 </div>
-
-
+              ))
+              :
+              <div className='flex items-center justify-center flex-col'>
+                <img src="https://static.wixstatic.com/media/1cf354_fff3948fea4141d4a94d91995105c58e~mv2.gif" alt="" width={'30%'}/>
+                <p className='font-semibold text-md'>Books not uploaded yet!!!</p>
               </div>
+          }
 
-              <div className="px-4 mt-4 md:mt-0">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book images" width={'250px'} height={'250px'} className='mx-2 my-3' />
-
-
-              </div>
-            </div>
-          </div>
         </div>
       }
 
       {/* toast for alert */}
       <ToastContainer
-        position="top-right"
+        position="top-center"
         autoClose={3000}
         hideProgressBar={false}
         newestOnTop={false}

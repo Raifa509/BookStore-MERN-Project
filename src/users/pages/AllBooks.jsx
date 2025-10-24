@@ -65,10 +65,9 @@ function AllBooks() {
       setBooks(tempBooks?.filter(item => item.category.toLowerCase() == category.toLowerCase()))
 
     }
-
-
-
   }
+
+  
   return (
     <>
       <Header />

@@ -40,11 +40,25 @@ import SERVERURL from "./serverURL";
     }
 
     //upload book
-     export const addBookAPI=async(reqBody,reqHeader)=>{
+    export const addBookAPI=async(reqBody,reqHeader)=>{
         return await commonAPI("POST",`${SERVERURL}/add-book`,reqBody,reqHeader)
     }
 
+    //all user's uploaded books
+    export const getAllUserUploadBookAPI=async(reqHeader)=>{
+        return await commonAPI("GET",`${SERVERURL}/user-books`,{},reqHeader)
+    }
 
+    //get userbought books
+    export const getAllUserPurchasedBookAPI=async(reqHeader)=>{
+        return await commonAPI("GET",`${SERVERURL}/user-bought-books`,{},reqHeader)
+    }
+
+    //delete user uploaded books
+    export const removeUserUploadBookAPI=async(bookId,reqHeader)=>{
+        return await commonAPI("DELETE",`${SERVERURL}/user-books/${bookId}/remove`,{},reqHeader)
+    }
+    
     //profile update
     //view purchase book
     //view approve books
