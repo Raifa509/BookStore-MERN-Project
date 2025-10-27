@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleCheck, faSquarePlus } from '@fortawesome/free-solid-svg-icons';
 import { toast, ToastContainer } from 'react-toastify'
 import { addBookAPI, getAllUserPurchasedBookAPI, getAllUserUploadBookAPI, removeUserUploadBookAPI } from "../../Services/allAPI";
+import SERVERURL from '../../Services/serverURL';
+import Edit from '../components/Edit';
+import { userUpdateContext } from '../../contextAPI/ContextShare';
 
 function Profile() {
 
@@ -21,9 +24,9 @@ function Profile() {
   const [userUploadedBooks, setUserUploadedBooks] = useState([])
   const [deleteBookStatus, setDeleteBookStatus] = useState(false)
   const [purchaseBooks, setPurchaseBooks] = useState([])
-  const [username,setUsername]=useState("")
-  const [userDp,setUserDp]=useState("")
-
+  const [username, setUsername] = useState("")
+  const [userDp, setUserDp] = useState("")
+  const { userEditResponse } = useContext(userUpdateContext)
 
   // console.log(userUploadedBooks);
   // console.log(purchaseBooks);
@@ -31,11 +34,11 @@ function Profile() {
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
       setToken(sessionStorage.getItem("token"))
-      const user=JSON.parse(sessionStorage.getItem("user"))
+      const user = JSON.parse(sessionStorage.getItem("user"))
       setUsername(user.username)
       setUserDp(user.Profile)
     }
-  }, [])
+  }, [userEditResponse])
 
   useEffect(() => {
     if (bookStatus) {
@@ -178,7 +181,7 @@ function Profile() {
       <Header />
       <div className='bg-slate-800' style={{ height: '200px' }}> </div>
       <div className="bg-white p-3" style={{ width: '230px', height: '230px', borderRadius: '50%', marginLeft: '70px', marginTop: '-130px' }}>
-        <img style={{ width: '200px', height: '200px', borderRadius: '50%' }} src="/login-bg.jpg" alt="profile" />
+        <img style={{ width: '200px', height: '200px', borderRadius: '50%' }} src={!userDp ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : userDp?.startsWith("https://lh3.googleusercontent.com") ? userDp : `${SERVERURL}/uploads/${userDp}`} alt="profile" />
       </div>
 
       <div className="md:flex justify-between px-20 mt-5">
@@ -186,7 +189,7 @@ function Profile() {
           <h1 className="font-bold md:text-3xl text-2xl">{username}</h1>
           <FontAwesomeIcon icon={faCircleCheck} className='text-blue-400 ms-2' />
         </div>
-        <div>Edit</div>
+        <div><Edit /></div>
       </div>
 
 
@@ -341,8 +344,8 @@ function Profile() {
               ))
 
               :
-             <div className='flex items-center justify-center flex-col'>
-                <img src="https://static.wixstatic.com/media/1cf354_fff3948fea4141d4a94d91995105c58e~mv2.gif" alt="" width={'30%'}/>
+              <div className='flex items-center justify-center flex-col'>
+                <img src="https://static.wixstatic.com/media/1cf354_fff3948fea4141d4a94d91995105c58e~mv2.gif" alt="" width={'30%'} />
                 <p className='font-semibold text-md'>Books not uploaded yet!!!</p>
               </div>
           }
@@ -367,7 +370,7 @@ function Profile() {
                       <h3 className='text-lg'>{item?.author}</h3>
                       <h4 className='text-md text-blue-500'>{item?.discountPrice}</h4>
                       <p className="text-justify text-sm mt-4">
-                     {item?.abstract}
+                        {item?.abstract}
                       </p>
 
                       <div className="flex mt-4">
@@ -386,7 +389,7 @@ function Profile() {
               ))
               :
               <div className='flex items-center justify-center flex-col'>
-                <img src="https://static.wixstatic.com/media/1cf354_fff3948fea4141d4a94d91995105c58e~mv2.gif" alt="" width={'30%'}/>
+                <img src="https://static.wixstatic.com/media/1cf354_fff3948fea4141d4a94d91995105c58e~mv2.gif" alt="" width={'30%'} />
                 <p className='font-semibold text-md'>Books not uploaded yet!!!</p>
               </div>
           }

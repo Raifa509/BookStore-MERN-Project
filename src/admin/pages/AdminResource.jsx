@@ -1,12 +1,53 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AdminSideBar from '../components/AdminSideBar'
 import AdminHeader from '../components/AdminHeader'
 import Footer from "../../components/Footer";
+import { getAllUsersAPI } from '../../Services/allAPI';
+import SERVERURL from '../../Services/serverURL';
 
 function AdminResource() {
 
   const [bookListStatus, setBookListStatus] = useState(true)
   const [usersListStatus, setUsersListStatus] = useState(false)
+  const [allUsers, setAllUsers] = useState([])
+  // const [token,setToken]=useState("")
+  // console.log(allUsers);
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      const token = sessionStorage.getItem("token")
+      if (bookListStatus) {
+
+      } else if (usersListStatus) {
+        getAllusers(token)
+      } else {
+        console.log("Something went wrong!!!");
+
+      }
+    }
+  }, [usersListStatus])
+
+
+
+  const getAllusers = async (userToken) => {
+    const reqHeader = {
+      'Authorization': `Bearer ${userToken}`
+    }
+    try {
+      const result = await getAllUsersAPI(reqHeader)
+      if (result.status == 200) {
+        setAllUsers(result.data)
+      } else {
+        console.log(result);
+
+      }
+
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
+
 
   return (
     <>
@@ -71,48 +112,29 @@ function AdminResource() {
 
           {
             usersListStatus &&
-            <div className="md:grid grid-cols-4 w-full my-5">
+            <div className="md:grid grid-cols-3 gap-5 w-full my-5">
 
-              <div className="shadow p-3 rounded mx-4 bg-gray-100 mx-4">
-                <p className='text-red-500 font-bold text-lg'>ID : 53624589633248852</p>
-                <div className='flex mt-3'>
-                  <img src="/login-bg.jpg" alt="user" width={'60px'} height={'80px'} style={{ borderRadius: '50%' }} />
-                  <div className="flex flex-col text-md ml-6">
-                    <p className='text-blue-600'>Username</p>
-                    <p>Email</p>
-                  </div>
-                </div>
-              </div>
-              <div className="shadow p-3 rounded mx-4 bg-gray-100 mx-4">
-                <p className='text-red-500 font-bold text-lg'>ID : 53624589633248852</p>
-                <div className='flex mt-3'>
-                  <img src="/login-bg.jpg" alt="user" width={'60px'} height={'80px'} style={{ borderRadius: '50%' }} />
-                  <div className="flex flex-col text-md ml-6">
-                    <p className='text-blue-600'>Username</p>
-                    <p>Email</p>
-                  </div>
-                </div>
-              </div>
-              <div className="shadow p-3 rounded mx-4 bg-gray-100 mx-4">
-                <p className='text-red-500 font-bold text-lg'>ID : 53624589633248852</p>
-                <div className='flex mt-3'>
-                  <img src="/login-bg.jpg" alt="user" width={'60px'} height={'80px'} style={{ borderRadius: '50%' }} />
-                  <div className="flex flex-col text-md ml-6">
-                    <p className='text-blue-600'>Username</p>
-                    <p>Email</p>
-                  </div>
-                </div>
-              </div>
-              <div className="shadow p-3 rounded mx-4 bg-gray-100 mx-4">
-                <p className='text-red-500 font-bold text-lg'>ID : 53624589633248852</p>
-                <div className='flex mt-3'>
-                  <img src="/login-bg.jpg" alt="user" width={'60px'} height={'80px'} style={{ borderRadius: '50%' }} />
-                  <div className="flex flex-col text-md ml-6">
-                    <p className='text-blue-600'>Username</p>
-                    <p>Email</p>
-                  </div>
-                </div>
-              </div>
+              {/* duplicating */}
+              {
+                allUsers?.length > 0 ?
+                  allUsers.map((item, index) => (
+                    <div key={index} className="shadow p-3 rounded bg-gray-100 mx-4">
+                      <p className='text-blue-400 font-bold text-md'>{item?._id}</p>
+                      <div className='flex mt-3'>
+                        <img src={item?.profile?`${SERVERURL}/uploads/${item.profile}` : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s"} alt="user" width={'50px'}  style={{ borderRadius: '50%' }} />
+                        <div className="flex flex-col text-md ml-6">
+                          <p className='text-yellow-500 font-semibold'>{item?.username}</p>
+                          <p>{item?.email}</p>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                  :
+                  <p>No users yet</p>
+
+              }
+
+
             </div>
           }
 
