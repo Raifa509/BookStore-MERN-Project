@@ -26,8 +26,8 @@ function Edit() {
             const userToken = sessionStorage.getItem("token")
             setToken(userToken)
             const user = JSON.parse(sessionStorage.getItem("user"))
-            setUserDetails({ username: user.username, password: user.password, cpassword: user.password, bio: user.bio, role: user.role })
-            setExistingProfile(user.profile)
+            setUserDetails({ username: user?.username, password: user?.password, cpassword: user?.password, bio: user?.bio, role: user?.role })
+            setExistingProfile(user?.profile)
         }
     }, [])
 
@@ -75,15 +75,24 @@ function Edit() {
                         toast.error("something went wrong!!!")
                         console.log(result);
                     }
+                }else{
+                    const result=await updateUserProfileAPI({username,password,bio,role,profile:existingProfile},reqHeader)
+                     if(result.status==200)
+                    {
+                        toast.success("Profile updated successfully")
+                        sessionStorage.setItem("user",JSON.stringify(result.data))
+                        handleReset()
+                        setOffCanvasStatus(false)
+                        setUserEditResponse(result.data)
+                    }else{
+                        toast.error("something went wrong!!!")
+                        console.log(result);
+                    }
+
                 }
 
 
-                //form
-                //if
-                //loop
-                //result
-                //if
-                //{ setUserEditResponse(result.data)}
+               
 
             }
         }

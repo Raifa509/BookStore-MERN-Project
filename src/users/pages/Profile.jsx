@@ -36,7 +36,7 @@ function Profile() {
       setToken(sessionStorage.getItem("token"))
       const user = JSON.parse(sessionStorage.getItem("user"))
       setUsername(user.username)
-      setUserDp(user.Profile)
+      setUserDp(user.profile)
     }
   }, [userEditResponse])
 
