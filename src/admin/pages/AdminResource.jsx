@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import AdminSideBar from '../components/AdminSideBar'
 import AdminHeader from '../components/AdminHeader'
 import Footer from "../../components/Footer";
-import { getAllUsersAPI } from '../../Services/allAPI';
+import { getAllAdminBooksAPI, getAllUsersAPI } from '../../Services/allAPI';
 import SERVERURL from '../../Services/serverURL';
 
 function AdminResource() {
@@ -10,6 +10,7 @@ function AdminResource() {
   const [bookListStatus, setBookListStatus] = useState(true)
   const [usersListStatus, setUsersListStatus] = useState(false)
   const [allUsers, setAllUsers] = useState([])
+  const [userBooks,setUserBooks]=useState([])
   // const [token,setToken]=useState("")
   // console.log(allUsers);
 
@@ -17,7 +18,7 @@ function AdminResource() {
     if (sessionStorage.getItem("token")) {
       const token = sessionStorage.getItem("token")
       if (bookListStatus) {
-
+       getAlluserBooks(token)
       } else if (usersListStatus) {
         getAllusers(token)
       } else {
@@ -27,6 +28,7 @@ function AdminResource() {
     }
   }, [usersListStatus])
 
+console.log(userBooks);
 
 
   const getAllusers = async (userToken) => {
@@ -47,7 +49,24 @@ function AdminResource() {
 
     }
   }
+  const getAlluserBooks = async (userToken) => {
+    const reqHeader = {
+      'Authorization': `Bearer ${userToken}`
+    }
+    try {
+      const result = await getAllAdminBooksAPI(reqHeader)
+      if (result.status == 200) {
+        setUserBooks(result.data)
+      } else {
+        console.log(result);
 
+      }
+
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
 
   return (
     <>
@@ -75,38 +94,23 @@ function AdminResource() {
             bookListStatus &&
             <div className="md:grid grid-cols-4 w-full mt-5">
 
-              <div className="shadow p-3 rounded mx-4">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
+             {
+              userBooks?.length>0 &&
+              userBooks?.map((item,index)=>(
+                 <div key={index} className="shadow p-3 rounded mx-4">
+                <img src={item?.imageUrl} alt="book" width={'100%'} height={'300px'} />
                 <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <p>$Price</p>
+                  <p className="text-blue-700 font-bold text-lg">{item?.author}</p>
+                  <p className="text-blue-700">{item?.title}</p>
+                  <p>${item?.discountPrice}</p>
+                  <div className="w-full text-center mt-2">
+                    <button className="p-2 rounded bg-green-700 text-white">Approve</button>
+                  </div>
                 </div>
               </div>
-              <div className="shadow p-3 rounded mx-4">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <p>$Price</p>
-                </div>
-              </div>
-              <div className="shadow p-3 rounded mx-4">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <p>$Price</p>
-                </div>
-              </div>
-              <div className="shadow p-3 rounded mx-4">
-                <img src="https://edit.org/img/blog/xk5-1024-free-ebook-cover-templates-download-online.webp" alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">Author</p>
-                  <p className="text-blue-700">Book Title</p>
-                  <p>$Price</p>
-                </div>
-              </div>
+              ))
+             }
+
             </div>
           }
 

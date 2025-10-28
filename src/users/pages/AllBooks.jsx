@@ -120,7 +120,7 @@ function AllBooks() {
                     {
                       books?.length > 0 ?
                         books?.map((item) => (
-                          <div key={item?._id} className="shadow p-3 rounded">
+                          <div key={item?._id} className="shadow p-3 rounded" hidden={item?.status=="pending" || item?.status=="sold"}>
                             <img src={item.imageUrl
                             } alt="book" width={'100%'} height={'300px'} />
                             <div className='flex flex-col justify-center items-center mt-2'>

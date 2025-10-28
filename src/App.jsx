@@ -22,6 +22,10 @@ function App() {
 
   const [loading,setLoading]=useState(true)
 
+  useEffect(() => {
+  console.log("✅ App mounted");
+}, []);
+
   useEffect(()=>{
     setTimeout(() => {
       setLoading(false)

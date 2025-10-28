@@ -74,7 +74,12 @@ export const updateUserProfileAPI = async (reqBody,reqHeader) => {
 //->authorised user api - admin
 //add career
 //update admin profile
+
 //list books
+export const getAllAdminBooksAPI = async (reqHeader) => {
+    return await commonAPI("GET", `${SERVERURL}/admin-all-books`, {}, reqHeader)
+}
+
 //list users
 export const getAllUsersAPI = async (reqHeader) => {
     return await commonAPI("GET", `${SERVERURL}/all-user`, {}, reqHeader)
