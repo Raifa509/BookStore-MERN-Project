@@ -87,3 +87,6 @@ export const getAllUsersAPI = async (reqHeader) => {
 
 
 //approve books
+export const approveBookAPI=async(reqBody)=>{
+    return await commonAPI("PUT",`${SERVERURL}/admin/book/approve`,reqBody)
+}

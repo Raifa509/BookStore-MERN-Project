@@ -10,7 +10,8 @@ function AdminResource() {
   const [bookListStatus, setBookListStatus] = useState(true)
   const [usersListStatus, setUsersListStatus] = useState(false)
   const [allUsers, setAllUsers] = useState([])
-  const [userBooks,setUserBooks]=useState([])
+  const [userBooks, setUserBooks] = useState([])
+  const [updateBookStatus,setUpdateBookStatus]=useState({})
   // const [token,setToken]=useState("")
   // console.log(allUsers);
 
@@ -18,7 +19,7 @@ function AdminResource() {
     if (sessionStorage.getItem("token")) {
       const token = sessionStorage.getItem("token")
       if (bookListStatus) {
-       getAlluserBooks(token)
+        getAlluserBooks(token)
       } else if (usersListStatus) {
         getAllusers(token)
       } else {
@@ -28,7 +29,7 @@ function AdminResource() {
     }
   }, [usersListStatus])
 
-console.log(userBooks);
+  console.log(userBooks);
 
 
   const getAllusers = async (userToken) => {
@@ -94,22 +95,34 @@ console.log(userBooks);
             bookListStatus &&
             <div className="md:grid grid-cols-4 w-full mt-5">
 
-             {
-              userBooks?.length>0 &&
-              userBooks?.map((item,index)=>(
-                 <div key={index} className="shadow p-3 rounded mx-4">
-                <img src={item?.imageUrl} alt="book" width={'100%'} height={'300px'} />
-                <div className='flex flex-col justify-center items-center mt-2'>
-                  <p className="text-blue-700 font-bold text-lg">{item?.author}</p>
-                  <p className="text-blue-700">{item?.title}</p>
-                  <p>${item?.discountPrice}</p>
-                  <div className="w-full text-center mt-2">
-                    <button className="p-2 rounded bg-green-700 text-white">Approve</button>
-                  </div>
-                </div>
-              </div>
-              ))
-             }
+              {
+                userBooks?.length > 0 ?
+                  userBooks?.map((item, index) => (
+                    <div key={index} className="shadow p-3 rounded mx-4">
+                      <img src={item?.imageUrl} alt="book" width={'100%'} height={'300px'} />
+                      <div className='flex flex-col justify-center items-center mt-2'>
+                        <p className="text-blue-700 font-bold text-lg">{item?.author}</p>
+                        <p className="text-blue-700">{item?.title}</p>
+                        <p>${item?.discountPrice}</p>
+                        <div className="w-full text-center mt-2">
+                          {
+                            item?.status == "pending" &&
+                            <button className="p-2 rounded bg-green-700 text-white hover:bg-green-600">Approve</button>
+
+                          }
+                          {
+                            item?.status == "approved" &&
+                            <div className="flex justify-end w-full">
+                              <img width={'40px'} height={'40px'} src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTD43yFj6F2cIDBjKzjTC3do3sWHo8p8WdEqA&s" alt="tick mark" />
+                            </div>
+                          }
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                  :
+                  <div>No Books added yet...</div>
+              }
 
             </div>
           }
@@ -125,7 +138,7 @@ console.log(userBooks);
                     <div key={index} className="shadow p-3 rounded bg-gray-100 mx-4">
                       <p className='text-blue-400 font-bold text-md'>{item?._id}</p>
                       <div className='flex mt-3'>
-                        <img src={item?.profile?`${SERVERURL}/uploads/${item.profile}` : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s"} alt="user" width={'50px'}  style={{ borderRadius: '50%' }} />
+                        <img src={item?.profile ? `${SERVERURL}/uploads/${item.profile}` : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s"} alt="user" width={'50px'} style={{ borderRadius: '50%' }} />
                         <div className="flex flex-col text-md ml-6">
                           <p className='text-yellow-500 font-semibold'>{item?.username}</p>
                           <p>{item?.email}</p>

@@ -322,7 +322,7 @@ function Profile() {
                         {
                           item?.status == "pending" ? <img src="https://psdstamps.com/wp-content/uploads/2022/04/round-pending-stamp-png.png" alt="pending" width={'115px'} /> : item?.status == "approved" ?
                             <img src="/approved.png" alt="pending" width={'115px'} height={'100px'} /> :
-                            <img src="/rejected.png" alt="pending" width={'115px'} />
+                            <img src="/sold.png" alt="pending" width={'115px'} />
                         }
 
                       </div>
