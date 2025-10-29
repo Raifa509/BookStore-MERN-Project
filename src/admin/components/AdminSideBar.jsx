@@ -1,17 +1,34 @@
 import { faBars, faBook, faGear, faGraduationCap, faHouse } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { adminUpdateContext } from '../../contextAPI/ContextShare'
+import SERVERURL from '../../Services/serverURL'
 
 function AdminSideBar() {
   const [listStatus,setListStatus]=useState(false)
+  const {adminEditResponse}=useContext(adminUpdateContext)
+  const [token,setToken]=useState("")
+  const [userDp,setUserDp]=useState("")
+
+  useEffect(() => {
+    if (sessionStorage.getItem("token")) {
+      const token = sessionStorage.getItem("token")
+      setToken(token)
+      const user = JSON.parse(sessionStorage.getItem("user"))
+      setUserDp(user.profile)
+    }
+
+  }, [token,adminEditResponse])
   return (
     <>
       <div className='md:min-h-screen bg-sky-100 md:mb-0 mb-3'>
         <div className="flex justify-center items-center flex-col ">
           {/* icon+name */}
           <div className='md:pt-20 pt-15'>
-            <img src="/login-bg.jpg" alt="admin profile" style={{width:'90px',height:'90px',borderRadius:'50%'}} />
+
+            <img src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : userDp.startsWith("https://lh3.googleusercontent.com") ? userDp : `${SERVERURL}/uploads/${userDp}`} alt="admin profile" style={{width:'90px',height:'90px',borderRadius:'50%'}} />
+
             <h1 className='text-lg mt-4'>Username</h1>
             <button onClick={() => setListStatus(!listStatus)} className='md:hidden'><FontAwesomeIcon icon={faBars} size="lg" className="ms-6 mt-4 mb-3" />
             </button>

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import AdminSideBar from '../components/AdminSideBar'
 import AdminHeader from '../components/AdminHeader'
 import Footer from "../../components/Footer";
-import { getAllAdminBooksAPI, getAllUsersAPI } from '../../Services/allAPI';
+import { approveBookAPI, getAllAdminBooksAPI, getAllUsersAPI } from '../../Services/allAPI';
 import SERVERURL from '../../Services/serverURL';
 
 function AdminResource() {
@@ -27,7 +27,7 @@ function AdminResource() {
 
       }
     }
-  }, [usersListStatus])
+  }, [usersListStatus,updateBookStatus])
 
   console.log(userBooks);
 
@@ -69,6 +69,24 @@ function AdminResource() {
     }
   }
 
+  const approveBook=async(book)=>{
+    const userToken=sessionStorage.getItem("token")
+        const reqHeader = {
+      'Authorization': `Bearer ${userToken}`
+    }
+    try{
+      const result=await approveBookAPI(book,reqHeader)
+      if(result.status==200)
+      {
+        setUpdateBookStatus(result.data)
+      }
+    }catch(err)
+    {
+      console.log(err);
+      
+    }
+  }
+  
   return (
     <>
 
@@ -107,7 +125,7 @@ function AdminResource() {
                         <div className="w-full text-center mt-2">
                           {
                             item?.status == "pending" &&
-                            <button className="p-2 rounded bg-green-700 text-white hover:bg-green-600">Approve</button>
+                            <button onClick={()=>approveBook(item)} className="p-2 rounded bg-green-700 text-white hover:bg-green-600">Approve</button>
 
                           }
                           {
