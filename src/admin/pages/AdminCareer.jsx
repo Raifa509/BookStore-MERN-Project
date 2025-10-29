@@ -5,6 +5,7 @@ import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
+import AddJob from '../../users/components/AddJob';
 
 
 
@@ -42,7 +43,7 @@ function AdminCareer() {
                   <input type="text" className="px-2 py-1  text-black shadow w-full placeholder-gray-500 rounded border border-white placeholder:text-sm" placeholder='Job Title ' />
                   <button className="bg-green-500 text-white p-2 ms-2 rounded">Search</button>
                 </div>
-                <div>Add</div>
+                <div><AddJob/></div>
               </div>
               <div className='shadow-lg p-8 mt-10 my-5'>
                 <div className='flex mb-5'>
