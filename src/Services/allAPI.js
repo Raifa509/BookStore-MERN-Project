@@ -1,7 +1,8 @@
 import commonAPI from "./commonAPI";
 import SERVERURL from "./serverURL";
 
-//->guest users api
+//---------------------------------guest users api-----------------------------------
+
 
 //register api - called by Auth component when register btn clicked,content-type:"application/json"
 export const registerAPI = async (reqBody) => {
@@ -24,10 +25,14 @@ export const getHomeBooksAPI = async () => {
     return await commonAPI("GET", `${SERVERURL}/home-books`)
 }
 
-//all career api
+//all jobs api
+export const getAllJobsAPI = async (searchKey) => {
+    return await commonAPI("GET", `${SERVERURL}/all-jobs?search=${searchKey}`)
+}
 
 
-//-------------------  authorised user api - user --------------------------------------------
+//---------------------------  authorised user api - user ---------------------------------------
+
 
 //view all books
 export const getAllBooksAPI = async (search, reqHeader) => {
@@ -65,14 +70,24 @@ export const updateUserProfileAPI = async (reqBody,reqHeader) => {
 }
 
 
-//------------------------- admin -----------------------------
+//------------------------------------ admin ----------------------------------------
 
 
 //view purchase book
 //view approve books
 
 //->authorised user api - admin
-//add career
+
+//add job
+export const addJobAPI=async(reqBody,reqHeader)=>{
+    return await commonAPI("POST",`${SERVERURL}/add-job`,reqBody,reqHeader)
+}
+
+//delete job
+export const removeJobAPI=async(jobId,reqHeader)=>{
+    return await commonAPI("DELETE",`${SERVERURL}/job/${jobId}/remove`,{},reqHeader)
+}
+
 //update admin profile
 export const updateAdminProfileAPI=async(reqBody,reqHeader)=>{
     return await commonAPI("PUT",`${SERVERURL}/admin-profile/edit`,reqBody,reqHeader)

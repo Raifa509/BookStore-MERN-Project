@@ -1,13 +1,35 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { faArrowUpRightFromSquare, faClose } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { getAllJobsAPI } from '../../Services/allAPI';
 
 
 function Careers() {
 
   const [modalStatus, setModalStatus] = useState(false)
+  const [allJobs, setAllJobs] = useState([])
+  const [searchKey, setSearchKey] = useState("")
+
+  console.log(allJobs);
+
+
+  useEffect(() => {
+    getAllJobs()
+  }, [searchKey])
+
+ const getAllJobs = async () => {
+    try {
+      const result = await getAllJobsAPI(searchKey)
+      if (result.status == 200) {
+        setAllJobs(result.data)
+      }
+    } catch (err) {
+      console.log(err);
+
+    }
+  }
 
   return (
     <>
@@ -23,7 +45,7 @@ function Careers() {
 
         <div className='flex flex-col justify-center items-center my-5'>
           <div className="flex">
-            <input type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
+            <input onChange={e=>setSearchKey(e.target.value)} type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
             <button className="bg-blue-900 text-white p-2">Search</button>
           </div>
 
@@ -61,7 +83,7 @@ function Careers() {
               <div className='bg-white rounded  w-150 ' >
                 <div className='flex justify-between items-center bg-black text-white p-3'>
                   <h3>Application Form</h3>
-                  <FontAwesomeIcon onClick={() => setModalStatus(false)} icon={faClose} className='cursor-pointer'/>
+                  <FontAwesomeIcon onClick={() => setModalStatus(false)} icon={faClose} className='cursor-pointer' />
                 </div>
                 {/* modal body */}
                 <div className='relative p-5'>
@@ -101,7 +123,7 @@ function Careers() {
                 <div className="bg-gray-200 p-3 flex justify-end">
                   <button className="p-2 rounded bg-orange-400 text-white border hover:bg-transparent hover:text-orange-400
                   hover:border-orange-400 cursor-pointer">Reset</button>
-                   <button className="p-2 rounded bg-blue-600 text-white ms-3 border hover:bg-transparent hover:text-blue-600 hover:border-blue-600 cursor-pointer">Submit</button>
+                  <button className="p-2 rounded bg-blue-600 text-white ms-3 border hover:bg-transparent hover:text-blue-600 hover:border-blue-600 cursor-pointer">Submit</button>
                 </div>
               </div>
             </div>
