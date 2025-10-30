@@ -397,7 +397,9 @@ function Profile() {
         </div>
       }
 
-      {/* toast for alert */}
+   
+      <Footer />
+         {/* toast for alert */}
       <ToastContainer
         position="top-center"
         autoClose={3000}
@@ -410,7 +412,6 @@ function Profile() {
         pauseOnHover
         theme="colored"
       />
-      <Footer />
     </>
   )
 }

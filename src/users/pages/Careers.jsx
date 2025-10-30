@@ -49,24 +49,33 @@ function Careers() {
             <button className="bg-blue-900 text-white p-2">Search</button>
           </div>
 
-          {/* career card */}
-          <div className='shadow-lg p-8 mt-10 my-5'>
+          {/* duplicate career card */}
+          {
+            allJobs?.length>0 ?
+            allJobs.map(item=>(
+              <div key={item?._id} className='shadow-lg p-8 mt-10 my-5'>
             <div className='flex mb-5'>
               <div className='w-full'>
-                <h4 className='text-lg mb-2'>Job Title</h4>
+                <h4 className='text-lg mb-2'>{item?.jobTitle}</h4>
                 <hr />
               </div>
               <button className='bg-blue-700 text-white p-3 ms-5 flex items-center rounded' onClick={() => setModalStatus(true)}>Apply<FontAwesomeIcon icon={faArrowUpRightFromSquare} /></button>
             </div>
             <div className='mt-5'>
-              <h3 className='my-2'>Location</h3>
-              <h3 className='my-2'>Job Type: Senior Level</h3>
-              <h3 className='my-2'>Salary: 10 lakhs</h3>
-              <h3 className='my-2'>Qualification: M-Tech/B-Tech/BCA/MCA</h3>
-              <h3 className='my-2'>Experience: 5-7</h3>
-              <h3 className='my-2'>Description: Lorem ipsum dolor sit amet consectetur adipisicing elit. Ut omnis hic iste commodi ullam. Sunt rerum ipsam vel quas fugiat temporibus, saepe, autem hic quibusdam perferendis, nesciunt accusamus laboriosam natus!</h3>
+              <h3 className='my-2'>{item?.location}</h3>
+              <h3 className='my-2'>Job Type: {item?.jobType}</h3>
+              <h3 className='my-2'>Salary: {item?.salary}</h3>
+              <h3 className='my-2'>Qualification: {item?.qualification}</h3>
+              <h3 className='my-2'>Experience: {item?.experience}</h3>
+              <h3 className='my-2'>Description: {item?.description}</h3>
             </div>
           </div>
+            ))
+            :
+             <div className='flex items-center mt-15 text-md font-semibold'>No Job openings...</div>
+          }
+
+
         </div>
       </div>
 

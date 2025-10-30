@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import AddJob from '../../users/components/AddJob';
-import { getAllJobsAPI } from '../../Services/allAPI';
+import { getAllJobsAPI, removeJobAPI } from '../../Services/allAPI';
 
 
 
@@ -15,14 +15,19 @@ function AdminCareer() {
   const [listApplicantStatus, setListApplicantStatus] = useState(false)
   const [allJobs, setAllJobs] = useState([])
   const [searchKey, setSearchKey] = useState("")
-
+  const [deleteJobStatus, setDeleteJobStatus] = useState(false)
+  const [newJobStatus,setNewJobStatus]=useState(false)
 
   console.log(allJobs);
   useEffect(() => {
     if (jobListStatus) {
       getAllJobs()
     }
-  }, [searchKey])
+  }, [searchKey, deleteJobStatus])
+
+  useEffect(() => {
+  getAllJobs();
+}, [newJobStatus]);
 
 
   const getAllJobs = async () => {
@@ -37,6 +42,27 @@ function AdminCareer() {
     }
   }
 
+  const removeJob = async (id) => {
+    if(sessionStorage.getItem("token"))
+    {
+      const userToken=sessionStorage.getItem("token")
+      const reqHeader = {
+      'Authorization': `Bearer ${userToken}`
+    }
+    try{
+      const result=await removeJobAPI(id,reqHeader)
+      if(result.status==200)
+      {
+        setDeleteJobStatus(result.data)
+      }
+    }catch(err)
+    {
+      console.log(err);
+      
+    }
+    }
+    
+  }
   return (
     <>
 
@@ -68,7 +94,7 @@ function AdminCareer() {
                   <input onChange={e => setSearchKey(e.target.value)} type="text" className="px-2 py-1  text-black shadow w-full placeholder-gray-500 rounded border border-white placeholder:text-sm" placeholder='Job Title ' />
                   <button className="bg-green-500 text-white p-2 ms-2 rounded">Search</button>
                 </div>
-                <div><AddJob /></div>
+                <div><AddJob onClick={() => setNewJobStatus(!newJobStatus)}/></div>
               </div>
 
               {/* duplicate */}
@@ -81,7 +107,7 @@ function AdminCareer() {
                           <h4 className='text-lg mb-2'>{item?.jobTitle}</h4>
                           <hr />
                         </div>
-                        <button className='bg-red-600 text-white p-3 ms-5 flex items-center rounded' >Delete<FontAwesomeIcon icon={faTrash} /></button>
+                        <button onClick={()=>removeJob(item?._id)} className='bg-red-600 text-white p-3 ms-5 flex items-center rounded' >Delete<FontAwesomeIcon icon={faTrash} /></button>
                       </div>
                       <div className='mt-5'>
                         <h3 className='my-2'>{item?.location}</h3>
