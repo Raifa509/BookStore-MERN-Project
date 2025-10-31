@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Header from "../components/Header";
 import Footer from "../../components/Footer";
-import { faArrowUpRightFromSquare, faClose } from '@fortawesome/free-solid-svg-icons';
+import { faArrowUpRightFromSquare, faClose, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAllJobsAPI } from '../../Services/allAPI';
 
@@ -19,11 +19,14 @@ function Careers() {
     getAllJobs()
   }, [searchKey])
 
- const getAllJobs = async () => {
+  const getAllJobs = async () => {
     try {
       const result = await getAllJobsAPI(searchKey)
       if (result.status == 200) {
         setAllJobs(result.data)
+      } else {
+        console.log(result);
+
       }
     } catch (err) {
       console.log(err);
@@ -45,34 +48,34 @@ function Careers() {
 
         <div className='flex flex-col justify-center items-center my-5'>
           <div className="flex">
-            <input onChange={e=>setSearchKey(e.target.value)} type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
+            <input onChange={e => setSearchKey(e.target.value)} type="text" className="px-2 py-1  border border-gray-600 text-black shadow w-full placeholder-gray-500 placeholder:text-sm" placeholder='Search By Title ' />
             <button className="bg-blue-900 text-white p-2">Search</button>
           </div>
 
           {/* duplicate career card */}
           {
-            allJobs?.length>0 ?
-            allJobs.map(item=>(
-              <div key={item?._id} className='shadow-lg p-8 mt-10 my-5'>
-            <div className='flex mb-5'>
-              <div className='w-full'>
-                <h4 className='text-lg mb-2'>{item?.jobTitle}</h4>
-                <hr />
-              </div>
-              <button className='bg-blue-700 text-white p-3 ms-5 flex items-center rounded' onClick={() => setModalStatus(true)}>Apply<FontAwesomeIcon icon={faArrowUpRightFromSquare} /></button>
-            </div>
-            <div className='mt-5'>
-              <h3 className='my-2'>{item?.location}</h3>
-              <h3 className='my-2'>Job Type: {item?.jobType}</h3>
-              <h3 className='my-2'>Salary: {item?.salary}</h3>
-              <h3 className='my-2'>Qualification: {item?.qualification}</h3>
-              <h3 className='my-2'>Experience: {item?.experience}</h3>
-              <h3 className='my-2'>Description: {item?.description}</h3>
-            </div>
-          </div>
-            ))
-            :
-             <div className='flex items-center mt-15 text-md font-semibold'>No Job openings...</div>
+            allJobs?.length > 0 ?
+              allJobs.map(item => (
+                <div key={item?._id} className='shadow-lg p-8 mt-10 my-5'>
+                  <div className='flex mb-5'>
+                    <div className='w-full'>
+                      <h4 className='text-lg mb-2'>{item?.jobTitle}</h4>
+                      <hr />
+                    </div>
+                    <button className='bg-blue-700 text-white p-3 ms-5 flex items-center rounded' onClick={() => setModalStatus(true)}>Apply<FontAwesomeIcon icon={faArrowUpRightFromSquare} /></button>
+                  </div>
+                  <div className='mt-5'>
+                    <h3 className='my-2 text-blue-500'><FontAwesomeIcon icon={faLocationDot} className='me-2' />{item?.location}</h3>
+                    <h3 className='my-2'>Job Type: {item?.jobType}</h3>
+                    <h3 className='my-2'>Salary: {item?.salary}</h3>
+                    <h3 className='my-2'>Qualification: {item?.qualification}</h3>
+                    <h3 className='my-2'>Experience: {item?.experience}</h3>
+                    <h3 className='my-2'>Description: {item?.description}</h3>
+                  </div>
+                </div>
+              ))
+              :
+              <div className='flex items-center mt-15 text-md font-semibold'>No Job openings...</div>
           }
 
 

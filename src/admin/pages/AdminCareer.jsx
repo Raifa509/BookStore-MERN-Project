@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import AdminSideBar from '../components/AdminSideBar'
 import AdminHeader from '../components/AdminHeader'
 import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faLocationDot, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import AddJob from '../../users/components/AddJob';
 import { getAllJobsAPI, removeJobAPI } from '../../Services/allAPI';
+import { adminNewAddJob } from '../../contextAPI/ContextShare';
 
 
 
@@ -16,19 +17,14 @@ function AdminCareer() {
   const [allJobs, setAllJobs] = useState([])
   const [searchKey, setSearchKey] = useState("")
   const [deleteJobStatus, setDeleteJobStatus] = useState(false)
-  const [newJobStatus,setNewJobStatus]=useState(false)
+  const {addJobResponse}=useContext(adminNewAddJob)
 
   console.log(allJobs);
   useEffect(() => {
     if (jobListStatus) {
       getAllJobs()
     }
-  }, [searchKey, deleteJobStatus])
-
-  useEffect(() => {
-  getAllJobs();
-}, [newJobStatus]);
-
+  }, [searchKey, deleteJobStatus,addJobResponse])
 
   const getAllJobs = async () => {
     try {
@@ -94,7 +90,7 @@ function AdminCareer() {
                   <input onChange={e => setSearchKey(e.target.value)} type="text" className="px-2 py-1  text-black shadow w-full placeholder-gray-500 rounded border border-white placeholder:text-sm" placeholder='Job Title ' />
                   <button className="bg-green-500 text-white p-2 ms-2 rounded">Search</button>
                 </div>
-                <div><AddJob onClick={() => setNewJobStatus(!newJobStatus)}/></div>
+                <div><AddJob/></div>
               </div>
 
               {/* duplicate */}
@@ -110,7 +106,7 @@ function AdminCareer() {
                         <button onClick={()=>removeJob(item?._id)} className='bg-red-600 text-white p-3 ms-5 flex items-center rounded' >Delete<FontAwesomeIcon icon={faTrash} /></button>
                       </div>
                       <div className='mt-5'>
-                        <h3 className='my-2'>{item?.location}</h3>
+                        <h3 className='my-2 text-blue-500'><FontAwesomeIcon icon={faLocationDot} className='me-2'/>{item?.location}</h3>
                         <h3 className='my-2'>Job Type: {item?.jobType}</h3>
                         <h3 className='my-2'>Salary: {item?.salary}</h3>
                         <h3 className='my-2'>Qualification: {item?.qualification}</h3>

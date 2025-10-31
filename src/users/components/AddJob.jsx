@@ -1,14 +1,16 @@
 import { faAdd, faClose } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { toast, ToastContainer } from 'react-toastify'
 import { addJobAPI } from '../../Services/allAPI'
+import { adminNewAddJob } from '../../contextAPI/ContextShare'
 
 function AddJob() {
   const [openModal, setOpenModel] = useState(false)
   const [jobDetails, setJobDetails] = useState({
     jobTitle: "", location: "", jobType: "", salary: "", qualification: "", experience: "", description: ""
   })
+  const {setAddJobResponse}=useContext(adminNewAddJob)
 
   console.log(jobDetails);
 
@@ -19,7 +21,7 @@ function AddJob() {
     })
   }
 
-  const handleAddJob =async () => {
+  const handleAddJob = async () => {
     const { jobTitle, location, jobType, salary, qualification, experience, description } = jobDetails
     if (!jobTitle || !location || !jobType || !salary || !qualification || !experience || !description) {
       toast.info("Please fill the form completely!!")
@@ -29,18 +31,28 @@ function AddJob() {
         const reqHeader = {
           'Authorization': `Bearer ${token}`
         }
-        try{
-          const result=await addJobAPI(jobDetails,reqHeader)
-          if(result.status==200)
-          {
+        try {
+          const result = await addJobAPI(jobDetails, reqHeader)
+          if (result.status == 200) {
             toast.success("New Job Added!!!")
             handleReset()
+            //share data to context
+            setAddJobResponse(result.data)
+            //close modal
+            setOpenModel(false)
+
+          } else if (result.status == 409) {
+            toast.warning(result.response.data)
+            handleReset()
+          } else {
+            toast.error("Something went wrong...")
           }
-        }catch(err)
-        {
+        } catch (err) {
           console.log(err);
-          
+          toast.warning("Something went wrong...")
         }
+      } else {
+        toast.warning("Something went wrong...")
       }
     }
   }
@@ -60,7 +72,7 @@ function AddJob() {
 
               {/* header */}
               <div className='w-full h-16 bg-black text-white p-5 flex items-center justify-between rounded-t-2xl'>
-                <h2>Application Form</h2>
+                <h2>New Job Opening Form</h2>
                 <FontAwesomeIcon icon={faClose} onClick={() => setOpenModel(!openModal)} />
               </div>
 
