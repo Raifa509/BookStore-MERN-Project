@@ -3,7 +3,10 @@ import Header from "../components/Header";
 import Footer from "../../components/Footer";
 import { faArrowUpRightFromSquare, faClose, faLocationDot } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getAllJobsAPI } from '../../Services/allAPI';
+import { addApplicationAPI, getAllJobsAPI } from '../../Services/allAPI';
+import { toast, ToastContainer } from 'react-toastify'
+import { useNavigate } from 'react-router-dom';
+
 
 
 function Careers() {
@@ -11,8 +14,19 @@ function Careers() {
   const [modalStatus, setModalStatus] = useState(false)
   const [allJobs, setAllJobs] = useState([])
   const [searchKey, setSearchKey] = useState("")
+  const [jobTitle,setJobTitle]=useState("")
+  const [jobId,setJobId]=useState("")
 
-  console.log(allJobs);
+  const [applicationDetails, setApplicationDetails] = useState({
+    fullname: "", email: "", qualification: "", phone: "", coverLetter: "", resume: ""
+  })
+  const navigate = useNavigate()
+
+  //reset resume input tag
+  const [fileKey, setFileKey] = useState(Date.now())
+
+  // console.log(allJobs);
+  console.log(applicationDetails);
 
 
   useEffect(() => {
@@ -32,6 +46,60 @@ function Careers() {
       console.log(err);
 
     }
+  }
+
+  const handleReset = () => {
+    setApplicationDetails({
+      fullname: "", email: "", qualification: "", phone: "", coverLetter: "", resume: ""
+    })
+    setFileKey(Date.now())
+  }
+
+  const handleSubmitApplications = async () => {
+    const { fullname, email, qualification, phone, coverLetter, resume } = applicationDetails
+    const token = sessionStorage.getItem("token")
+    if (!token) {
+      toast.info("Please login to apply job!!!")
+      setTimeout(() => {
+        navigate('/login')
+      }, 2000);
+    } else if (!fullname || !email || !qualification || !phone || !coverLetter || !resume) {
+      toast.info("Please fill the form completely!!!")
+    } else {
+      const reqHeader = {
+        'Authorization': `Bearer ${token}`
+      }
+      const reqBody=new FormData()
+      for(let key in applicationDetails)
+      {
+        reqBody.append(key,applicationDetails[key])
+      }
+      reqBody.append("jobTitle",jobTitle)
+      reqBody.append("jobId",jobId)
+      const result=await addApplicationAPI(reqBody,reqHeader)
+      console.log(result);
+      if(result.status==200)
+      {
+        toast.success("Application submitted successfully!!!")
+        handleReset()
+        setModalStatus(false)
+      }else if(result.status==409)
+      {
+        toast.warning(result.response.data)
+         handleReset()
+      }else{
+        toast.error("Something went wrong...")
+         handleReset()
+        setModalStatus(false)
+      }
+      
+    }
+  }
+
+  const handleApplyJob=(job)=>{
+    setJobId(job?._id)
+    setJobTitle(job?.jobTitle)
+    setModalStatus(true)
   }
 
   return (
@@ -62,7 +130,7 @@ function Careers() {
                       <h4 className='text-lg mb-2'>{item?.jobTitle}</h4>
                       <hr />
                     </div>
-                    <button className='bg-blue-700 text-white p-3 ms-5 flex items-center rounded' onClick={() => setModalStatus(true)}>Apply<FontAwesomeIcon icon={faArrowUpRightFromSquare} /></button>
+                    <button className='bg-blue-700 text-white p-3 ms-5 flex items-center rounded' onClick={() => handleApplyJob(item)}>Apply<FontAwesomeIcon icon={faArrowUpRightFromSquare} /></button>
                   </div>
                   <div className='mt-5'>
                     <h3 className='my-2 text-blue-500'><FontAwesomeIcon icon={faLocationDot} className='me-2' />{item?.location}</h3>
@@ -101,28 +169,28 @@ function Careers() {
                 <div className='relative p-5'>
                   <div className="md:grid grid-cols-2 gap-x-5">
                     <div className="mb-3">
-                      <input type="text" placeholder='Full Name' className='w-full p-2 border rounded text-black placeholder-gray-400' />
+                      <input value={applicationDetails?.fullname} onChange={e => setApplicationDetails({ ...applicationDetails, fullname: e.target.value })} type="text" placeholder='Full Name' className='w-full p-2 border rounded text-black placeholder-gray-400' />
                     </div>
 
                     <div className="mb-3">
-                      <input type="text" placeholder='Qualification' className='w-full p-2 border rounded text-black placeholder-gray-400' />
+                      <input value={applicationDetails?.qualification} onChange={e => setApplicationDetails({ ...applicationDetails, qualification: e.target.value })} type="text" placeholder='Qualification' className='w-full p-2 border rounded text-black placeholder-gray-400' />
                     </div>
                     <div className="mb-3">
-                      <input type="text" placeholder='Email ID' className='w-full p-2 border rounded text-black placeholder-gray-400' />
+                      <input value={applicationDetails?.email} onChange={e => setApplicationDetails({ ...applicationDetails, email: e.target.value })} type="text" placeholder='Email ID' className='w-full p-2 border rounded text-black placeholder-gray-400' />
                     </div>
 
                     <div className="mb-3">
-                      <input type="text" placeholder='Phone ' className='w-full p-2 border rounded text-black placeholder-gray-400' />
+                      <input value={applicationDetails?.phone} onChange={e => setApplicationDetails({ ...applicationDetails, phone: e.target.value })} type="text" placeholder='Phone ' className='w-full p-2 border rounded text-black placeholder-gray-400' />
                     </div>
 
                     <div className="mb-3 col-span-2">
-                      <textarea placeholder='Cover Letter' className='w-full p-2 border rounded text-black placeholder-gray-400' />
+                      <textarea value={applicationDetails?.coverLetter} onChange={e => setApplicationDetails({ ...applicationDetails, coverLetter: e.target.value })} placeholder='Cover Letter' className='w-full p-2 border rounded text-black placeholder-gray-400' />
                     </div>
 
 
                     <div className="mb-3 col-span-2 text-gray-400">
                       <label htmlFor="">Resume</label>
-                      <input type="file" name="" id="" className='w-full border rounded file:bg-gray-400 file:p-2 file:text-white ' />
+                      <input key={fileKey} onChange={e => setApplicationDetails({ ...applicationDetails, resume: e.target.files[0] })} type="file" name="" id="" className='w-full border rounded file:bg-gray-400 file:p-2 file:text-white ' />
 
                     </div>
 
@@ -134,8 +202,8 @@ function Careers() {
                 {/* modal footer */}
                 <div className="bg-gray-200 p-3 flex justify-end">
                   <button className="p-2 rounded bg-orange-400 text-white border hover:bg-transparent hover:text-orange-400
-                  hover:border-orange-400 cursor-pointer">Reset</button>
-                  <button className="p-2 rounded bg-blue-600 text-white ms-3 border hover:bg-transparent hover:text-blue-600 hover:border-blue-600 cursor-pointer">Submit</button>
+                  hover:border-orange-400 cursor-pointer" onClick={handleReset}>Reset</button>
+                  <button onClick={handleSubmitApplications} className="p-2 rounded bg-blue-600 text-white ms-3 border hover:bg-transparent hover:text-blue-600 hover:border-blue-600 cursor-pointer" >Submit</button>
                 </div>
               </div>
             </div>
@@ -146,7 +214,19 @@ function Careers() {
 
 
       <Footer />
-
+      {/* toast for alert */}
+      <ToastContainer
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick={false}
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+      />
     </>
   )
 }

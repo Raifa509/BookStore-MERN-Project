@@ -6,8 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
 import AddJob from '../../users/components/AddJob';
-import { getAllJobsAPI, removeJobAPI } from '../../Services/allAPI';
+import { getAllApplicationAPI, getAllJobsAPI, removeJobAPI } from '../../Services/allAPI';
 import { adminNewAddJob } from '../../contextAPI/ContextShare';
+import SERVERURL from '../../Services/serverURL';
 
 
 
@@ -17,14 +18,22 @@ function AdminCareer() {
   const [allJobs, setAllJobs] = useState([])
   const [searchKey, setSearchKey] = useState("")
   const [deleteJobStatus, setDeleteJobStatus] = useState(false)
-  const {addJobResponse}=useContext(adminNewAddJob)
+  const { addJobResponse } = useContext(adminNewAddJob)
+  const [applications, setApplications] = useState([])
 
-  console.log(allJobs);
-  useEffect(() => {
-    if (jobListStatus) {
-      getAllJobs()
-    }
-  }, [searchKey, deleteJobStatus,addJobResponse])
+  // console.log(allJobs);
+  console.log(applications);
+
+useEffect(() => {
+  if (jobListStatus) {
+    getAllJobs();
+  } else if (listApplicantStatus) {
+    getApplications();
+  }
+}, [searchKey, deleteJobStatus, addJobResponse, jobListStatus, listApplicantStatus]);
+
+
+  useEffect
 
   const getAllJobs = async () => {
     try {
@@ -39,26 +48,48 @@ function AdminCareer() {
   }
 
   const removeJob = async (id) => {
-    if(sessionStorage.getItem("token"))
-    {
-      const userToken=sessionStorage.getItem("token")
+    if (sessionStorage.getItem("token")) {
+      const userToken = sessionStorage.getItem("token")
       const reqHeader = {
-      'Authorization': `Bearer ${userToken}`
-    }
-    try{
-      const result=await removeJobAPI(id,reqHeader)
-      if(result.status==200)
-      {
-        setDeleteJobStatus(result.data)
+        'Authorization': `Bearer ${userToken}`
       }
-    }catch(err)
-    {
-      console.log(err);
-      
+      try {
+        const result = await removeJobAPI(id, reqHeader)
+        if (result.status == 200) {
+          setDeleteJobStatus(result.data)
+        }
+      } catch (err) {
+        console.log(err);
+
+      }
     }
-    }
-    
+
   }
+
+  const getApplications = async () => {
+    const userToken = sessionStorage.getItem("token");
+    if (!userToken) {
+      console.log("No token found");
+      return;
+    }
+
+    const reqHeader = {
+      Authorization: `Bearer ${userToken}`,
+    };
+
+    try {
+      const result = await getAllApplicationAPI(reqHeader);
+      if (result.status === 200) {
+        setApplications(result.data);
+      } else {
+        console.log(result);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+
   return (
     <>
 
@@ -90,7 +121,7 @@ function AdminCareer() {
                   <input onChange={e => setSearchKey(e.target.value)} type="text" className="px-2 py-1  text-black shadow w-full placeholder-gray-500 rounded border border-white placeholder:text-sm" placeholder='Job Title ' />
                   <button className="bg-green-500 text-white p-2 ms-2 rounded">Search</button>
                 </div>
-                <div><AddJob/></div>
+                <div><AddJob /></div>
               </div>
 
               {/* duplicate */}
@@ -103,10 +134,10 @@ function AdminCareer() {
                           <h4 className='text-lg mb-2'>{item?.jobTitle}</h4>
                           <hr />
                         </div>
-                        <button onClick={()=>removeJob(item?._id)} className='bg-red-600 text-white p-3 ms-5 flex items-center rounded' >Delete<FontAwesomeIcon icon={faTrash} /></button>
+                        <button onClick={() => removeJob(item?._id)} className='bg-red-600 text-white p-3 ms-5 flex items-center rounded' >Delete<FontAwesomeIcon icon={faTrash} /></button>
                       </div>
                       <div className='mt-5'>
-                        <h3 className='my-2 text-blue-500'><FontAwesomeIcon icon={faLocationDot} className='me-2'/>{item?.location}</h3>
+                        <h3 className='my-2 text-blue-500'><FontAwesomeIcon icon={faLocationDot} className='me-2' />{item?.location}</h3>
                         <h3 className='my-2'>Job Type: {item?.jobType}</h3>
                         <h3 className='my-2'>Salary: {item?.salary}</h3>
                         <h3 className='my-2'>Qualification: {item?.qualification}</h3>
@@ -141,18 +172,32 @@ function AdminCareer() {
                     </tr>
                   </thead>
                   <tbody>
-                    <tr>
-                      <td className="border border-gray-500 p-3 text-center">1</td>
-                      <td className="border border-gray-500 p-3 text-center">Front End Developer</td>
-                      <td className="border border-gray-500 p-3 text-center">Max Miller</td>
-                      <td className="border border-gray-500 p-3 text-center">BCA</td>
+                    {
+                      applications?.length > 0 ?
+                        applications?.map((item, index) => (
+                          <tr key={item?._id}>
+                            <td className="border border-gray-500 p-3 text-center">{index + 1}</td>
+                            <td className="border border-gray-500 p-3 text-center">{item?.jobTitle}</td>
+                            <td className="border border-gray-500 p-3 text-center">{item?.fullname}</td>
+                            <td className="border border-gray-500 p-3 text-center">{item?.qualification}</td>
 
-                      <td className="border border-gray-500 p-3 text-center">max@gmail.com</td>
-                      <td className="border border-gray-500 p-3 text-center">9865463232</td>
+                            <td className="border border-gray-500 p-3 text-center">{item?.email}</td>
+                            <td className="border border-gray-500 p-3 text-center">{item?.phone}</td>
 
-                      <td className="border border-gray-500 p-3 text-center">Lorem, ipsum dolor sit amet consectetur adipisicing elit. Tenetur ex natus, consequuntur repudiandae alias sapiente deserunt. Error architecto earum quos vel qui explicabo nemo, quae nulla quisquam eligendi repellat magni!</td>
-                      <td className="border border-gray-500 p-3 text-center"><Link className='text-blue-600 underline'>Resume</Link></td>
-                    </tr>
+                            <td className="border border-gray-500 p-3 text-center">{item?.coverLetter}</td>
+                            <td className="border border-gray-500 p-3 text-center"><Link className='text-blue-600 underline' to={`${SERVERURL}/pdf/${item?.resume}`} target='_blank'>Resume</Link></td>
+                          </tr>
+                        ))
+
+                        :
+                        (
+                          <tr>
+                            <td colSpan="8" className="p-5 text-center text-gray-600 font-semibold">
+                              No Applications are available
+                            </td>
+                          </tr>
+                        )
+                    }
                   </tbody>
                 </table>
               </div>

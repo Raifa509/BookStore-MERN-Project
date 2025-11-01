@@ -69,6 +69,12 @@ export const updateUserProfileAPI = async (reqBody,reqHeader) => {
     return await commonAPI("PUT", `${SERVERURL}/user-profile/edit`, reqBody, reqHeader)
 }
 
+//add application
+export const addApplicationAPI = async (reqBody, reqHeader) => {
+    return await commonAPI("POST", `${SERVERURL}/apply-job`, reqBody, reqHeader)
+}
+
+
 
 //------------------------------------ admin ----------------------------------------
 
@@ -107,4 +113,9 @@ export const getAllUsersAPI = async (reqHeader) => {
 //approve books
 export const approveBookAPI=async(reqBody,reqHeader)=>{
     return await commonAPI("PUT",`${SERVERURL}/admin/book/approve`,reqBody,reqHeader)
+}
+
+//list application - called by admin career component
+export const getAllApplicationAPI = async (reqHeader) => {
+    return await commonAPI("GET", `${SERVERURL}/all-applications`, {}, reqHeader)
 }
