@@ -15,8 +15,8 @@ import AdminDashboard from "./admin/pages/AdminDashboard";
 import AdminResource from "./admin/pages/AdminResource";
 import AdminSetting from "./admin/pages/AdminSetting";
 import { userAuthContext } from './contextAPI/AuthContext';
-
-
+import PaymentSuccess from "./users/pages/PaymentSuccess";
+import PaymentError from "./users/pages/PaymentError";
 
 
 function App() {
@@ -41,21 +41,24 @@ function App() {
         <Route path='/contact' element={<Contact />} />
 
         {
-          role=="user" &&
+          role == "user" &&
           <>
-          <Route path='/book/:id/view' element={<ViewBook />} />
-          <Route path='/profile' element={<Profile />} />
-        </>
-        
+            <Route path='/book/:id/view' element={<ViewBook />} />
+            <Route path='/profile' element={<Profile />} />
+            <Route path='/payment-success' element={<PaymentSuccess />} />
+            <Route path='/payment-error' element={<PaymentError />} />
+
+          </>
+
         }
 
-     { role=="admin" &&  
-      <>
-          <Route path='/admin-dashboard' element={loading ? <Preloader /> : <AdminDashboard />} />
-          <Route path='/admin-career' element={<AdminCareer />} />
-          <Route path='/admin-resources' element={<AdminResource />} />
-          <Route path='/admin-setting' element={<AdminSetting />} />
-        </>}
+        {role == "admin" &&
+          <>
+            <Route path='/admin-dashboard' element={loading ? <Preloader /> : <AdminDashboard />} />
+            <Route path='/admin-career' element={<AdminCareer />} />
+            <Route path='/admin-resources' element={<AdminResource />} />
+            <Route path='/admin-setting' element={<AdminSetting />} />
+          </>}
 
 
         <Route path='/*' element={<Pnf />} />

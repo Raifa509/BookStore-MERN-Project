@@ -5,7 +5,7 @@ import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faLocationDot, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Link } from 'react-router-dom';
-import AddJob from '../../users/components/AddJob';
+import AddJob from '../components/AddJob';
 import { getAllApplicationAPI, getAllJobsAPI, removeJobAPI } from '../../Services/allAPI';
 import { adminNewAddJob } from '../../contextAPI/ContextShare';
 import SERVERURL from '../../Services/serverURL';

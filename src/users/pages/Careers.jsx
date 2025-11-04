@@ -14,8 +14,8 @@ function Careers() {
   const [modalStatus, setModalStatus] = useState(false)
   const [allJobs, setAllJobs] = useState([])
   const [searchKey, setSearchKey] = useState("")
-  const [jobTitle,setJobTitle]=useState("")
-  const [jobId,setJobId]=useState("")
+  const [jobTitle, setJobTitle] = useState("")
+  const [jobId, setJobId] = useState("")
 
   const [applicationDetails, setApplicationDetails] = useState({
     fullname: "", email: "", qualification: "", phone: "", coverLetter: "", resume: ""
@@ -69,34 +69,31 @@ function Careers() {
       const reqHeader = {
         'Authorization': `Bearer ${token}`
       }
-      const reqBody=new FormData()
-      for(let key in applicationDetails)
-      {
-        reqBody.append(key,applicationDetails[key])
+      const reqBody = new FormData()
+      for (let key in applicationDetails) {
+        reqBody.append(key, applicationDetails[key])
       }
-      reqBody.append("jobTitle",jobTitle)
-      reqBody.append("jobId",jobId)
-      const result=await addApplicationAPI(reqBody,reqHeader)
+      reqBody.append("jobTitle", jobTitle)
+      reqBody.append("jobId", jobId)
+      const result = await addApplicationAPI(reqBody, reqHeader)
       console.log(result);
-      if(result.status==200)
-      {
+      if (result.status == 200) {
         toast.success("Application submitted successfully!!!")
         handleReset()
         setModalStatus(false)
-      }else if(result.status==409)
-      {
+      } else if (result.status == 409) {
         toast.warning(result.response.data)
-         handleReset()
-      }else{
+        handleReset()
+      } else {
         toast.error("Something went wrong...")
-         handleReset()
+        handleReset()
         setModalStatus(false)
       }
-      
+
     }
   }
 
-  const handleApplyJob=(job)=>{
+  const handleApplyJob = (job) => {
     setJobId(job?._id)
     setJobTitle(job?.jobTitle)
     setModalStatus(true)
