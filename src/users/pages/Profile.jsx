@@ -374,7 +374,7 @@ function Profile() {
                       </p>
 
                       <div className="flex mt-4">
-                        <img src="https://www.citypng.com/public/uploads/preview/hd-sold-green-stamp-word-png-7017516946853662lgydj6is3.png" alt="" width={'100px'} height={'100px'} />
+                        <img src="https://en.pimg.jp/111/006/006/1/111006006.jpg" alt="" width={'100px'} height={'100px'} />
                       </div>
 
 

@@ -4,6 +4,7 @@ import { faInstagram, faTwitter, faFacebook } from '@fortawesome/free-brands-svg
 import { faAddressCard, faBars, faPowerOff, faUser } from '@fortawesome/free-solid-svg-icons';
 import { Link, useNavigate } from 'react-router-dom';
 import SERVERURL from '../../Services/serverURL'
+import { userAuthContext } from '../../contextAPI/AuthContext';
 import { userUpdateContext } from '../../contextAPI/ContextShare';
 
 function Header() {
@@ -15,6 +16,7 @@ function Header() {
   const [dropDownStatus, setDropDownStatus] = useState(false)
   const navigate = useNavigate()
   const { userEditResponse } = useContext(userUpdateContext)
+  const { role, authorisedUser, setAuthorisedUser } = useContext(userAuthContext)
 
   useEffect(() => {
     if (sessionStorage.getItem("token")) {
@@ -24,11 +26,12 @@ function Header() {
       setUserDp(user.profile)
     }
 
-  }, [token,userEditResponse])
+  }, [token, userEditResponse])
 
   //logout handle
   const handlelogout = () => {
     sessionStorage.clear();
+    setAuthorisedUser(false)
     setToken("");
     setUserDp("");
     setDropDownStatus(false)
@@ -107,7 +110,7 @@ function Header() {
 
               <div className='relative inline-block text-left'>
                 <button onClick={() => setDropDownStatus(!dropDownStatus)} className=' bg-gray-100 rounded-full px-1 py-1 shadow-xs hover:bg-gray-50 w-full cursor-pointer'>
-                     <img width={'40px'} height={'40px'} style={{ borderRadius: "50%" }} src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : userDp.startsWith("https://lh3.googleusercontent.com") ? userDp : `${SERVERURL}/uploads/${userDp}`} alt="user" />
+                  <img width={'40px'} height={'40px'} style={{ borderRadius: "50%" }} src={userDp == "" ? "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTSLU5_eUUGBfxfxRd4IquPiEwLbt4E_6RYMw&s" : userDp.startsWith("https://lh3.googleusercontent.com") ? userDp : `${SERVERURL}/uploads/${userDp}`} alt="user" />
                 </button>
 
                 {

@@ -40,8 +40,7 @@ function App() {
         <Route path='/careers' element={<Careers />} />
         <Route path='/contact' element={<Contact />} />
 
-        {
-          role == "user" &&
+        {role == "user" &&
           <>
             <Route path='/book/:id/view' element={<ViewBook />} />
             <Route path='/profile' element={<Profile />} />
@@ -49,16 +48,20 @@ function App() {
             <Route path='/payment-error' element={<PaymentError />} />
 
           </>
-
         }
 
-        {role == "admin" &&
+        {
+          role == "admin" &&
           <>
             <Route path='/admin-dashboard' element={loading ? <Preloader /> : <AdminDashboard />} />
             <Route path='/admin-career' element={<AdminCareer />} />
             <Route path='/admin-resources' element={<AdminResource />} />
             <Route path='/admin-setting' element={<AdminSetting />} />
-          </>}
+
+          </>
+
+
+        }
 
 
         <Route path='/*' element={<Pnf />} />

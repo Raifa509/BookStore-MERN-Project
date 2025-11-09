@@ -74,6 +74,10 @@ export const addApplicationAPI = async (reqBody, reqHeader) => {
     return await commonAPI("POST", `${SERVERURL}/apply-job`, reqBody, reqHeader)
 }
 
+//make payment
+export const makePaymentAPI = async (reqBody, reqHeader) => {
+    return await commonAPI("POST", `${SERVERURL}/make-payment`, reqBody, reqHeader)
+}
 
 
 //------------------------------------ admin ----------------------------------------

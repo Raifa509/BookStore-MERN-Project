@@ -4,7 +4,7 @@ import Footer from "../../components/Footer";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBackward, faCamera, faClose, faEye } from '@fortawesome/free-solid-svg-icons';
 import { Link, useParams } from 'react-router-dom';
-import { getSingleBookAPI } from '../../Services/allAPI';
+import { getSingleBookAPI, makePaymentAPI } from '../../Services/allAPI';
 import { toast, ToastContainer } from 'react-toastify'
 import SERVERURL from '../../Services/serverURL';
 import {loadStripe} from '@stripe/stripe-js';
@@ -53,6 +53,27 @@ function ViewBook() {
     //stripe object
     const stripe = await loadStripe('pk_test_51SPbfPFZ4aeoDq4tAlPvqQCSlgwUFosEts1CeD9gz8os9rodSxOvrmfA4MjpP1i7s3yv9boev6LpSYK7Ek5SrdOl00zoEKwzCf');
     // console.log(stripe);
+    const token=sessionStorage.getItem("token")
+    if(token)
+    {
+      const reqHeader = {
+        "Authorization": `Bearer ${token}`
+      }
+      try{
+        const result =await makePaymentAPI(book,reqHeader)
+        console.log(result);
+        const checkoutSessionURL =result?.data?.checkoutSessionURL
+        if(checkoutSessionURL)
+        {
+          //redirect
+          window.location.href=checkoutSessionURL
+        }
+      }catch(err)
+      {
+        console.log(err);
+        
+      }
+    }
     
   }
 
@@ -96,7 +117,7 @@ function ViewBook() {
               <div className="flex justify-end">
                 <button className="bg-blue-700 px-4 py-1 text-white rounded"><Link to={'/all-books'}><FontAwesomeIcon icon={faBackward} className='me-1' />Back</Link>
                 </button>
-                <button className="bg-green-600 px-4 py-1 text-white rounded ms-5" onClick={handlePayment}><Link>Buy $ {book?.discountPrice}</Link></button>
+                <button className="bg-green-600 px-4 py-1 text-white rounded ms-5" onClick={handlePayment}>Buy $ {book?.discountPrice}</button>
               </div>
             </div>
 

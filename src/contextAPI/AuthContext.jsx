@@ -7,6 +7,7 @@ function AuthContext({children}) {
 
     const [role,setRole]=useState("")
     const [authorisedUser,setAuthorisedUser]=useState(false)
+
     useEffect(()=>{
         if(sessionStorage.getItem("user") && sessionStorage.getItem("token"))
         {
@@ -17,7 +18,7 @@ function AuthContext({children}) {
     },[role,authorisedUser])
   return (
     <>
-   <userAuthContext.Provider value={{role,authorisedUser,setAuthorisedUser}}> {children}</userAuthContext.Provider>
+   <userAuthContext.Provider value={{role,authorisedUser,setAuthorisedUser}}>{children}</userAuthContext.Provider>
     </>
   )
 }
