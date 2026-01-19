@@ -10,14 +10,14 @@ import { userAuthContext } from '../contextAPI/AuthContext'
 
 function Auth({ register }) {
 
-  const {role,authorisedUser,setAuthorisedUser}=useContext(userAuthContext)
+  const { role, authorisedUser, setAuthorisedUser } = useContext(userAuthContext)
   const navigate = useNavigate()
   const [userDetails, setUserDetails] = useState({
     username: "",
     email: "",
     password: ""
   })
-  
+
   const [viewPasswordStatus, setViewPasswordStatus] = useState(false)
   // console.log(userDetails);
 
@@ -115,22 +115,23 @@ function Auth({ register }) {
     try {
       const result = await googleLoginAPI({ username: details.name, email: details.email, password: "googlepswd", profile: details.picture })
       // console.log(result);
-     if (result.status == 200) {
-          toast.success("Login Success!!!")
-          sessionStorage.setItem("user", JSON.stringify(result.data.user))
-          sessionStorage.setItem("token", result.data.user)
-          setTimeout(() => {
-            if (result.data.user.role == "admin") {
-              navigate("/admin-dashboard")
-            } else {
-              navigate("/")
-            }
-          }, 2500)
-        }
-        else {
-          // console.log(result);
-          toast.error("Something went wrong!!!")
-        }
+      if (result.status == 200) {
+        toast.success("Login Success!!!")
+        sessionStorage.setItem("user", JSON.stringify(result.data.user))
+        sessionStorage.setItem("token", result.data.token)
+        setAuthorisedUser(true)
+        setTimeout(() => {
+          if (result.data.user.role == "admin") {
+            navigate("/admin-dashboard")
+          } else {
+            navigate("/")
+          }
+        }, 2500)
+      }
+      else {
+        // console.log(result);
+        toast.error("Something went wrong!!!")
+      }
     } catch (err) {
       console.log(err);
 

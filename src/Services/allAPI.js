@@ -83,9 +83,6 @@ export const makePaymentAPI = async (reqBody, reqHeader) => {
 //------------------------------------ admin ----------------------------------------
 
 
-//view purchase book
-//view approve books
-
 //->authorised user api - admin
 
 //add job
